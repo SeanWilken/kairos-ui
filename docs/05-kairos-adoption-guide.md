@@ -32,7 +32,7 @@ See `./08-studio-screen-map.md` for component-level mapping examples tied to the
 ## Verification checklist
 
 - Build passes
-- No boundary violations (no domain imports in `@kairos/ui`)
+- No boundary violations (no domain imports in `@kairosstack/ui`)
 - Keyboard/focus states preserved
 - Form behavior unchanged
 - Visual drift reviewed

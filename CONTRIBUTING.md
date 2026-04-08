@@ -1,4 +1,4 @@
-# Contributing to @kairos/ui
+# Contributing to @kairosstack/ui
 
 Thanks for contributing.
 

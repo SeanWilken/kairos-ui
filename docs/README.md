@@ -1,12 +1,14 @@
 # Kairos UI Docs
 
-This is the documentation hub for `@kairos/ui`.
+This is the documentation hub for `@kairosstack/ui`.
 
-`@kairos/ui` is currently published and consumed as an alpha package. The rollout path is:
+`@kairosstack/ui` is currently published and consumed as an alpha package. The rollout path is:
 
 1. Push and validate on GitHub
 2. Publish alpha builds to npm
 3. Consume from `studio` and `core` using normal package installation
+
+Publishing scope for this library is `@kairosstack`.
 
 ## Start here
 

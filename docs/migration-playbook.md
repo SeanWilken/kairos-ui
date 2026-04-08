@@ -1,6 +1,6 @@
 # Migration Playbook (Studio and Core Frontends)
 
-Use this playbook when replacing local UI components with `@kairos/ui`.
+Use this playbook when replacing local UI components with `@kairosstack/ui`.
 
 ## Step 1: Baseline
 
@@ -29,7 +29,7 @@ Validate keyboard nav, focus rings, and disabled states.
 
 ## Step 4: Keep app-level wrappers
 
-If Studio/Core has product-specific defaults, use wrappers in those repos instead of adding product-specific props to `@kairos/ui`.
+If Studio/Core has product-specific defaults, use wrappers in those repos instead of adding product-specific props to `@kairosstack/ui`.
 
 ## Step 5: Resolve style mismatches
 

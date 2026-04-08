@@ -5,7 +5,7 @@ Use these patterns to keep components generic and app-ready.
 ## Pass data through props
 
 ```tsx
-import { Badge, Card, CardContent, CardHeader, CardTitle } from "@kairos/ui";
+import { Badge, Card, CardContent, CardHeader, CardTitle } from "@kairosstack/ui";
 
 type ServiceStatus = {
   name: string;
@@ -31,7 +31,7 @@ export function StatusCard({ status }: { status: ServiceStatus }) {
 ## Prefer app wrappers for product defaults
 
 ```tsx
-import { Button, type ButtonProps } from "@kairos/ui";
+import { Button, type ButtonProps } from "@kairosstack/ui";
 
 export function PrimaryActionButton(props: ButtonProps) {
   return <Button variant="default" size="sm" {...props} />;
@@ -41,7 +41,7 @@ export function PrimaryActionButton(props: ButtonProps) {
 ## Override internal affordances when needed
 
 ```tsx
-import { Dialog, DialogContent, DialogTitle } from "@kairos/ui";
+import { Dialog, DialogContent, DialogTitle } from "@kairosstack/ui";
 import { X } from "lucide-react";
 
 export function SettingsDialog() {
@@ -58,5 +58,5 @@ export function SettingsDialog() {
 ## Keep boundary mapping in the app
 
 - Map SDK/core contracts to view-model data in the app repo.
-- Render that mapped data with `@kairos/ui` primitives.
+- Render that mapped data with `@kairosstack/ui` primitives.
 - Avoid domain logic inside shared components.

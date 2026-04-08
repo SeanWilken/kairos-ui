@@ -1,8 +1,10 @@
-# @kairos/ui
+# @kairosstack/ui
 
 Open-source React UI primitives for Kairos apps and external consumers.
 
-`@kairos/ui` is a building-block library. It focuses on composition, accessibility, and configurability instead of app-specific workflows.
+`@kairosstack/ui` is a building-block library. It focuses on composition, accessibility, and configurability instead of app-specific workflows.
+
+Package scope is managed under the npm organization `@kairosstack`.
 
 ## Purpose
 
@@ -20,13 +22,13 @@ Open-source React UI primitives for Kairos apps and external consumers.
 ## Installation
 
 ```bash
-npm install @kairos/ui@alpha
+npm install @kairosstack/ui@alpha
 ```
 
 Or with Bun:
 
 ```bash
-bun add @kairos/ui@alpha
+bun add @kairosstack/ui@alpha
 ```
 
 ## Documentation
@@ -43,8 +45,8 @@ bun add @kairos/ui@alpha
 ## Quick start
 
 ```tsx
-import { Button } from "@kairos/ui";
-import "@kairos/ui/styles.css";
+import { Button } from "@kairosstack/ui";
+import "@kairosstack/ui/styles.css";
 
 export function Example() {
   return <Button>Save</Button>;
@@ -58,7 +60,7 @@ export function Example() {
 Import once in your app entry:
 
 ```tsx
-import "@kairos/ui/styles.css";
+import "@kairosstack/ui/styles.css";
 ```
 
 ### 2) Theme-only tokens
@@ -66,7 +68,7 @@ import "@kairos/ui/styles.css";
 If you want your own utility/classes but still want shared token names:
 
 ```tsx
-import "@kairos/ui/theme.css";
+import "@kairosstack/ui/theme.css";
 ```
 
 ### 3) No package styles
@@ -76,7 +78,7 @@ Import components only, then style them completely in your app/fork.
 ## Tailwind and daisyUI
 
 - Tailwind is optional at the package level.
-- If you use `@kairos/ui/styles.css`, your app should include Tailwind v4 tooling.
+- If you use `@kairosstack/ui/styles.css`, your app should include Tailwind v4 tooling.
 - daisyUI is not a dependency of this package; you can layer daisyUI in your app and override classes/tokens as needed.
 
 See `docs/styling.md` for recommended override patterns.

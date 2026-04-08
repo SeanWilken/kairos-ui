@@ -1,6 +1,6 @@
 # Purpose and Scope
 
-`@kairos/ui` exists to provide reusable UI building blocks that can be shared across Kairos apps and external projects.
+`@kairosstack/ui` exists to provide reusable UI building blocks that can be shared across Kairos apps and external projects.
 
 ## In scope
 
@@ -20,4 +20,4 @@
 
 - `kairos-core` remains source of domain/runtime truth.
 - Product repos map domain data to view-model props.
-- `@kairos/ui` renders those props without importing domain contracts.
+- `@kairosstack/ui` renders those props without importing domain contracts.

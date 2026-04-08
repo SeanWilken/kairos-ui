@@ -1,6 +1,6 @@
 # 03 - Component Catalog
 
-Current exported primitives from `@kairos/ui`:
+Current exported primitives from `@kairosstack/ui`:
 
 ## Layout and structure
 

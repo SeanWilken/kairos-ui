@@ -2,7 +2,7 @@
 
 For the current GitHub docs walkthrough version of this guide, start at `docs/README.md` and `docs/05-kairos-adoption-guide.md`.
 
-This guide covers how to adopt `@kairos/ui` in both Kairos app repos:
+This guide covers how to adopt `@kairosstack/ui` in both Kairos app repos:
 
 - `kairos-studio`
 - `kairos-core` frontend/bootstrap surfaces
@@ -14,7 +14,7 @@ The goal is shared primitives with app-owned domain mapping.
 In each app repo:
 
 ```bash
-bun add @kairos/ui
+bun add @kairosstack/ui@alpha
 ```
 
 Until npm publishing is in place, use a local package workflow:
@@ -28,18 +28,18 @@ Until npm publishing is in place, use a local package workflow:
 In your app entry (or top-level layout):
 
 ```tsx
-import "@kairos/ui/styles.css";
+import "@kairosstack/ui/styles.css";
 ```
 
 If an app needs custom styling ownership, use one of:
 
-- `@kairos/ui/theme.css` (tokens only)
+- `@kairosstack/ui/theme.css` (tokens only)
 - no style import (fully app-owned styles)
 
 ## 3) Keep boundaries clean
 
 - Map core/sdk responses to view-model props in the app layer.
-- Pass those props into `@kairos/ui` components.
+- Pass those props into `@kairosstack/ui` components.
 - Do not move domain contracts into this package.
 
 ## 4) Migration strategy
@@ -62,7 +62,7 @@ Each consuming app can create its own wrappers around shared primitives for opin
 Example in app repo:
 
 ```tsx
-import { Button, type ButtonProps } from "@kairos/ui";
+import { Button, type ButtonProps } from "@kairosstack/ui";
 
 export function PrimaryActionButton(props: ButtonProps) {
   return <Button variant="default" {...props} />;
@@ -77,14 +77,14 @@ daisyUI remains optional and app-level.
 
 If a consuming app uses daisyUI:
 
-- align app token values with `@kairos/ui` CSS variables
+- align app token values with `@kairosstack/ui` CSS variables
 - override classes where needed through wrappers
 - avoid pushing daisy-specific assumptions into shared primitives
 
 ## 7) Verification checklist per app
 
-- Build passes with `@kairos/ui` imported.
-- No domain contract imports from `@kairos/ui`.
+- Build passes with `@kairosstack/ui` imported.
+- No domain contract imports from `@kairosstack/ui`.
 - Keyboard/focus behavior still works after migration.
 - Dark/light token overrides behave as expected.
 - Critical forms still submit/validate correctly after primitive swaps.

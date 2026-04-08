@@ -1,6 +1,6 @@
 # 08 - Studio Screen Map
 
-This page maps current `kairos-studio` screens to `@kairos/ui` component usage patterns.
+This page maps current `kairos-studio` screens to `@kairosstack/ui` component usage patterns.
 
 Use it during migration to keep UI behavior consistent while replacing local components.
 

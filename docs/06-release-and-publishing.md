@@ -2,6 +2,8 @@
 
 This project is currently released in alpha while integrations are refined.
 
+Package name and scope: `@kairosstack/ui` under npm organization `@kairosstack`.
+
 ## Release sequence
 
 1. Push changes to GitHub
@@ -25,7 +27,7 @@ npm publish --tag alpha --access public
 ## Consumer install (alpha)
 
 ```bash
-bun add @kairos/ui@alpha
+bun add @kairosstack/ui@alpha
 ```
 
 ## Before publishing

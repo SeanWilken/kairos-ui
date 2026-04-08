@@ -1,11 +1,11 @@
 # 04 - Theming and Overrides
 
-`@kairos/ui` supports multiple styling modes.
+`@kairosstack/ui` supports multiple styling modes.
 
 ## Default package styles
 
 ```tsx
-import "@kairos/ui/styles.css";
+import "@kairosstack/ui/styles.css";
 ```
 
 Use this for fastest setup.
@@ -13,7 +13,7 @@ Use this for fastest setup.
 ## Theme tokens only
 
 ```tsx
-import "@kairos/ui/theme.css";
+import "@kairosstack/ui/theme.css";
 ```
 
 Use this when your app owns most styling but wants shared token names.

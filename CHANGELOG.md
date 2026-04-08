@@ -8,7 +8,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ### Added
 
-- Initial standalone `@kairos/ui` package scaffolding.
+- Initial standalone `@kairosstack/ui` package scaffolding.
 - Shared UI primitive exports and style entrypoints.
 - Documentation baseline for usage and contribution.
 - Kairos app integration guide for `studio` and `core` frontends.
