@@ -20,6 +20,7 @@ Publishing scope for this library is `@kairosstack`.
 - [06 - Release and Publishing (alpha)](./06-release-and-publishing.md)
 - [07 - Contributing Components](./07-contributing-components.md)
 - [08 - Studio Screen Map](./08-studio-screen-map.md)
+- [09 - Wizard Templates](./09-wizard-templates.md)
 
 ## Screenshots
 

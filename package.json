@@ -1,6 +1,6 @@
 {
   "name": "@kairosstack/ui",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.2-alpha.1",
   "private": false,
   "type": "module",
   "packageManager": "bun@1.2.19",

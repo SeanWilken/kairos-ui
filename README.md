@@ -39,6 +39,7 @@ bun add @kairosstack/ui@alpha
 - Component catalog: `docs/03-component-catalog.md`
 - Theming and overrides: `docs/04-theming-and-overrides.md`
 - Kairos adoption guide: `docs/05-kairos-adoption-guide.md`
+- Wizard templates: `docs/09-wizard-templates.md`
 - Studio screen map: `docs/08-studio-screen-map.md`
 - Release/publishing flow: `docs/06-release-and-publishing.md`
 

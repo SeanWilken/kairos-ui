@@ -10,6 +10,7 @@ This guide covers adoption in:
 1. Swap low-risk primitives (`Button`, `Input`, `Label`, `Card`)
 2. Validate visual and interaction parity
 3. Swap interaction-heavy components (`Dialog`, `DropdownMenu`, `Select`, `Tabs`, `Tooltip`)
+4. Adopt `WizardTemplate` for setup/onboarding flows while keeping domain logic in app adapters
 
 ## Suggested PR strategy
 

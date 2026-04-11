@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog and this project follows Semantic Versioning.
 
+## [Unreleased]
+
+### Changed
+
+- Expanded component authoring baseline with slot-level customization guidance (`classNames`, `slotProps`) and ref-safe `asChild` expectations.
+- Added theming baseline guidance for light/dark token support with Tailwind/daisyUI as optional integrations only.
+- Added planned composite component targets (`PageWrapper`, `Hero`) and associated API expectations.
+- Added configurable skeleton variants and convenience loaders (`SkeletonText`, `SkeletonMenu`).
+- Added slot-level class map support for menu surfaces (`DropdownMenuContent`, `SelectContent`) to allow targeted item/content customization.
+- Updated usage docs with optimistic UI and skeleton loading patterns using TanStack Query.
+- Added reusable layout composites for app pages and shell structure (`AppShell*`, `PageWrapper*`, `Hero*`) with slot-level class map support.
+
 ## [0.1.0] - 2026-04-07
 
 ### Added
