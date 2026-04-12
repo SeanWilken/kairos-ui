@@ -14,27 +14,46 @@ type WizardStep = {
   icon?: React.ComponentType<{ className?: string }>;
 };
 
+type WizardStepRecordItem = {
+  label: string;
+  description?: string;
+  icon?: React.ComponentType<{ className?: string }>;
+};
+
+type WizardStepRecord = Record<string, WizardStepRecordItem>;
+
 type WizardModeOption = {
   id: WizardMode;
   label: string;
 };
 
+type WizardModeOptionRecord = Record<string, string>;
+type WizardStringRecord = Record<string, string>;
+
+type WizardLabels = {
+  back?: string;
+  next?: string;
+  progressComplete?: string;
+};
+
 type WizardTemplateProps = {
-  steps: WizardStep[];
+  steps: WizardStep[] | WizardStepRecord;
   currentStepId: string;
   completedStepIds?: string[];
-  title: React.ReactNode;
-  description?: React.ReactNode;
-  contextText?: React.ReactNode;
+  title: string;
+  description?: string;
+  contextText?: string;
+  contextValues?: WizardStringRecord;
   children: React.ReactNode;
   canGoBack?: boolean;
   canGoNext?: boolean;
-  nextLabel?: React.ReactNode;
-  backLabel?: React.ReactNode;
+  nextLabel?: string;
+  backLabel?: string;
+  labels?: WizardLabels;
   onNext?: () => void;
   onBack?: () => void;
   mode?: WizardMode;
-  modeOptions?: WizardModeOption[];
+  modeOptions?: WizardModeOption[] | WizardModeOptionRecord;
   onModeChange?: (mode: WizardMode) => void;
   className?: string;
   classNames?: {
@@ -50,9 +69,25 @@ type WizardTemplateProps = {
 };
 
 type WizardPresetTemplateProps = Omit<WizardTemplateProps, "title" | "description"> & {
-  title?: React.ReactNode;
-  description?: React.ReactNode;
+  title?: string;
+  description?: string;
 };
+
+function normalizeSteps(steps: WizardTemplateProps["steps"]): WizardStep[] {
+  if (Array.isArray(steps)) return steps;
+  return Object.entries(steps).map(([id, value]) => ({
+    id,
+    label: value.label,
+    description: value.description,
+    icon: value.icon,
+  }));
+}
+
+function normalizeModeOptions(modeOptions: WizardTemplateProps["modeOptions"]): WizardModeOption[] {
+  if (!modeOptions) return [];
+  if (Array.isArray(modeOptions)) return modeOptions;
+  return Object.entries(modeOptions).map(([id, label]) => ({ id, label }));
+}
 
 function WizardTemplate({
   steps,
@@ -61,11 +96,13 @@ function WizardTemplate({
   title,
   description,
   contextText,
+  contextValues,
   children,
   canGoBack = true,
   canGoNext = true,
-  nextLabel = "Continue",
-  backLabel = "Back",
+  nextLabel,
+  backLabel,
+  labels,
   onNext,
   onBack,
   mode,
@@ -74,11 +111,18 @@ function WizardTemplate({
   className,
   classNames,
 }: WizardTemplateProps) {
-  const currentIndex = steps.findIndex((step) => step.id === currentStepId);
+  const normalizedSteps = React.useMemo(() => normalizeSteps(steps), [steps]);
+  const normalizedModeOptions = React.useMemo(() => normalizeModeOptions(modeOptions), [modeOptions]);
+
+  const currentIndex = normalizedSteps.findIndex((step) => step.id === currentStepId);
   const activeIndex = currentIndex >= 0 ? currentIndex : 0;
   const completedSet = React.useMemo(() => new Set(completedStepIds), [completedStepIds]);
-  const completedCount = steps.filter((step) => completedSet.has(step.id)).length;
-  const progress = steps.length > 0 ? (completedCount / steps.length) * 100 : 0;
+  const completedCount = normalizedSteps.filter((step) => completedSet.has(step.id)).length;
+  const progress = normalizedSteps.length > 0 ? (completedCount / normalizedSteps.length) * 100 : 0;
+  const progressLabel = labels?.progressComplete ?? "complete";
+  const backButtonLabel = backLabel ?? labels?.back ?? "Back";
+  const nextButtonLabel = nextLabel ?? labels?.next ?? "Continue";
+  const hasContextValues = !!contextValues && Object.keys(contextValues).length > 0;
 
   return (
     <div
@@ -90,17 +134,14 @@ function WizardTemplate({
       )}
     >
       <div className="grid min-h-[680px] grid-cols-1 lg:grid-cols-[248px_1fr]">
-        <aside
-          data-slot="wizard-template-rail"
-          className={cn("border-r bg-background", classNames?.rail)}
-        >
+        <aside data-slot="wizard-template-rail" className={cn("border-r bg-background", classNames?.rail)}>
           <div className={cn("border-b px-4 py-4", classNames?.railHeader)}>
             <div className="text-sm font-semibold">{title}</div>
             {description ? <p className="mt-1 text-xs text-muted-foreground">{description}</p> : null}
 
-            {mode && modeOptions && modeOptions.length > 0 && onModeChange ? (
+            {mode && normalizedModeOptions.length > 0 && onModeChange ? (
               <div className="mt-3 grid grid-cols-2 gap-1 rounded-md border bg-muted/40 p-1">
-                {modeOptions.map((modeOption) => (
+                {normalizedModeOptions.map((modeOption) => (
                   <button
                     key={modeOption.id}
                     type="button"
@@ -120,15 +161,26 @@ function WizardTemplate({
 
             <div className="mt-3">
               <div className="mb-1.5 flex items-center justify-between text-xs text-muted-foreground">
-                <span>{completedCount} of {steps.length} complete</span>
+                <span>{completedCount} of {normalizedSteps.length} {progressLabel}</span>
                 <span>{Math.round(progress)}%</span>
               </div>
               <Progress value={progress} className="h-1.5" />
             </div>
+
+            {hasContextValues ? (
+              <dl className="mt-3 space-y-1 text-xs text-muted-foreground">
+                {Object.entries(contextValues).map(([key, value]) => (
+                  <div key={key} className="flex gap-2">
+                    <dt className="font-medium text-foreground">{key}:</dt>
+                    <dd className="truncate">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
           </div>
 
           <nav data-slot="wizard-template-rail-nav" className={cn("space-y-0.5 p-3", classNames?.railNav)}>
-            {steps.map((step, index) => {
+            {normalizedSteps.map((step, index) => {
               const done = completedSet.has(step.id);
               const active = index === activeIndex;
               const Icon = step.icon;
@@ -159,7 +211,12 @@ function WizardTemplate({
                   <div className="min-w-0">
                     <div className="truncate text-sm font-medium leading-none">{step.label}</div>
                     {step.description ? (
-                      <div className={cn("mt-0.5 truncate text-xs", active ? "text-primary-foreground/80" : "text-muted-foreground")}>
+                      <div
+                        className={cn(
+                          "mt-0.5 truncate text-xs",
+                          active ? "text-primary-foreground/80" : "text-muted-foreground",
+                        )}
+                      >
                         {step.description}
                       </div>
                     ) : null}
@@ -178,6 +235,16 @@ function WizardTemplate({
           >
             <div className="text-sm font-semibold">{title}</div>
             {contextText ? <p className="mt-1 text-xs text-muted-foreground">{contextText}</p> : null}
+            {hasContextValues ? (
+              <dl className="mt-2 grid grid-cols-1 gap-1 text-xs text-muted-foreground sm:grid-cols-2">
+                {Object.entries(contextValues).map(([key, value]) => (
+                  <div key={key} className="flex items-center gap-1.5">
+                    <dt className="font-medium text-foreground">{key}:</dt>
+                    <dd className="truncate">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
           </header>
 
           <div
@@ -192,10 +259,10 @@ function WizardTemplate({
             className={cn("flex items-center justify-between border-t px-5 py-3 sm:px-6", classNames?.panelFooter)}
           >
             <Button variant="outline" onClick={onBack} disabled={!canGoBack}>
-              {backLabel}
+              {backButtonLabel}
             </Button>
             <Button onClick={onNext} disabled={!canGoNext}>
-              {nextLabel}
+              {nextButtonLabel}
             </Button>
           </footer>
         </section>
@@ -222,9 +289,14 @@ function OnboardingWizardTemplate({
 
 export { OnboardingWizardTemplate, SetupWizardTemplate, WizardTemplate };
 export type {
+  WizardLabels,
   WizardMode,
   WizardModeOption,
+  WizardModeOptionRecord,
   WizardPresetTemplateProps,
   WizardStep,
+  WizardStepRecord,
+  WizardStepRecordItem,
+  WizardStringRecord,
   WizardTemplateProps,
 };
