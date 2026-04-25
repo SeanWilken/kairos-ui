@@ -40,6 +40,7 @@ bun add @kairosstack/ui@alpha
 - Theming and overrides: `docs/04-theming-and-overrides.md`
 - Kairos adoption guide: `docs/05-kairos-adoption-guide.md`
 - Wizard templates: `docs/09-wizard-templates.md`
+- Profile builder and cards: `docs/10-profile-builder-and-cards.md`
 - Studio screen map: `docs/08-studio-screen-map.md`
 - Release/publishing flow: `docs/06-release-and-publishing.md`
 

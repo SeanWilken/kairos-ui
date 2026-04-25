@@ -58,6 +58,14 @@ Current exported primitives from `@kairosstack/ui`:
 
 - `Command`
 
+## Profile and resume builders
+
+- `ProfileBuilderWizard`
+- `ProfileTypeSelector`
+- `ProfileResumeCard`
+- `ProfileCard`
+- `ProfileCardGrid`
+
 ## Utility exports
 
 - `cn` from `utils`

@@ -119,3 +119,73 @@ export type AssistantProfile = {
   role: string;
   avatarColor: string;
 };
+
+export type ProfileKind = "human" | "persona";
+
+export type ProfileTraitOption = {
+  id: string;
+  label: string;
+  description?: string;
+};
+
+export type ProfileCommunicationOption = {
+  id: string;
+  label: string;
+  description?: string;
+};
+
+export type ProfileSkillGroup = {
+  id: string;
+  label: string;
+  skills: string[];
+};
+
+export type ProfileToolGroup = {
+  id: string;
+  label: string;
+  tools: string[];
+};
+
+export type ProfileModelOption = {
+  id: string;
+  label: string;
+  tier?: string;
+  description?: string;
+};
+
+export type ProfileGuidelines = {
+  dos: string[];
+  donts: string[];
+  guardrails: string[];
+};
+
+export type ProfileContact = {
+  email?: string;
+  location?: string;
+  timezone?: string;
+  links?: string[];
+};
+
+export type ProfileDraft = {
+  id?: string;
+  kind: ProfileKind;
+  orgId?: string;
+  scope?: string;
+  name: string;
+  role: string;
+  industry: string;
+  headline: string;
+  summary: string;
+  avatarText?: string;
+  traits: string[];
+  communicationStyle: string;
+  tone: string;
+  initiative: string;
+  skills: string[];
+  tools: string[];
+  model: string;
+  modelProfile?: string;
+  systemPromptOverride?: string;
+  guidelines: ProfileGuidelines;
+  contact: ProfileContact;
+};

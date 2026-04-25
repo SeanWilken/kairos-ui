@@ -6,6 +6,13 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+### Added
+
+- Added reusable profile/resume builder components for persona and human profile flows (`ProfileBuilderWizard`, `ProfileTypeSelector`, `ProfileResumeCard`).
+- Added reusable contact-style profile presentation components for directory/grid use (`ProfileCard`, `ProfileCardGrid`).
+- Added shared profile contract types (`ProfileDraft`, trait/skill/tool/model option types) and exported them from package root.
+- Added implementation and usage documentation for profile builder and card/grid consumption (`docs/10-profile-builder-and-cards.md`).
+
 ### Changed
 
 - Expanded component authoring baseline with slot-level customization guidance (`classNames`, `slotProps`) and ref-safe `asChild` expectations.

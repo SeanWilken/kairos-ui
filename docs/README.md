@@ -21,6 +21,7 @@ Publishing scope for this library is `@kairosstack`.
 - [07 - Contributing Components](./07-contributing-components.md)
 - [08 - Studio Screen Map](./08-studio-screen-map.md)
 - [09 - Wizard Templates](./09-wizard-templates.md)
+- [10 - Profile Builder and Cards](./10-profile-builder-and-cards.md)
 
 ## Screenshots
 
