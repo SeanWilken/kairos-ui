@@ -68,7 +68,8 @@ Current exported primitives from `@kairosstack/ui`:
 
 ## Auth pages
 
-- `AuthLoginPage`
+- `StudioLogin`
+- `AuthLoginPage` (stateful convenience wrapper)
 
 ## Utility exports
 

@@ -1,12 +1,7 @@
 import * as React from "react";
-import { Bot, Sparkles } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { Button } from "./ui/button";
-import { Checkbox } from "./ui/checkbox";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { cn } from "./ui/utils";
+import { StudioLogin } from "./StudioLogin";
 
 export type LoginFormPayload = {
   email: string;
@@ -34,7 +29,6 @@ export type AuthLoginPageProps = {
   onSubmit: (payload: LoginFormPayload) => Promise<void> | void;
   onForgotPassword?: () => void;
   onRequestAccess?: () => void;
-  className?: string;
 };
 
 function AuthLoginPage({
@@ -53,11 +47,10 @@ function AuthLoginPage({
   submittingLabel = "Signing in...",
   hideForgotPassword = false,
   hideRequestAccess = false,
-  hideRememberMe = false,
+  hideRememberMe = false, // kept for compatibility
   onSubmit,
   onForgotPassword,
   onRequestAccess,
-  className,
 }: AuthLoginPageProps) {
   const [email, setEmail] = React.useState(initialEmail);
   const [password, setPassword] = React.useState("");
@@ -80,109 +73,41 @@ function AuthLoginPage({
   };
 
   return (
-    <div className={cn("min-h-screen bg-background", className)}>
-      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
-        <aside className="bg-primary text-primary-foreground relative hidden overflow-hidden p-10 lg:block">
-          <div className="relative z-10 flex h-full flex-col justify-center">
-            <div className="bg-primary-foreground/10 mb-6 flex h-20 w-20 items-center justify-center rounded-2xl">
-              <Bot className="size-10" />
-            </div>
-            <p className="mb-2 text-sm opacity-80">{appTitle}</p>
-            <h1 className="mb-4 text-4xl font-semibold tracking-tight">{heroTitle}</h1>
-            <p className="max-w-lg text-lg opacity-90">{heroDescription}</p>
-          </div>
-          <div className="bg-primary-foreground/10 absolute -left-12 top-10 size-40 rounded-full blur-3xl" />
-          <div className="bg-primary-foreground/10 absolute -bottom-10 right-8 size-48 rounded-full blur-3xl" />
-        </aside>
-
-        <main className="flex items-center justify-center p-6 sm:p-10">
-          <div className="w-full max-w-md">
-            <div className="mb-8">
-              <h2 className="mb-2 text-2xl font-semibold tracking-tight">{welcomeTitle}</h2>
-              <p className="text-muted-foreground text-sm">{welcomeDescription}</p>
-              {notice ? <div className="mt-3">{notice}</div> : null}
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="auth-login-email" className="text-sm">
-                  Email address
-                </Label>
-                <Input
-                  id="auth-login-email"
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="you@company.com"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="auth-login-password" className="text-sm">
-                  Password
-                </Label>
-                <Input
-                  id="auth-login-password"
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-
-              {!hideRememberMe || !hideForgotPassword ? (
-                <div className="flex items-center justify-between gap-3">
-                  {!hideRememberMe ? (
-                    <label className="flex items-center gap-2 text-sm">
-                      <Checkbox checked={rememberMe} onCheckedChange={(checked) => setRememberMe(Boolean(checked))} />
-                      <span className="text-muted-foreground">{rememberMeLabel}</span>
-                    </label>
-                  ) : (
-                    <span />
-                  )}
-
-                  {!hideForgotPassword ? (
-                    <Button type="button" variant="link" className="h-auto p-0 text-sm" onClick={onForgotPassword}>
-                      {forgotPasswordLabel}
-                    </Button>
-                  ) : null}
-                </div>
-              ) : null}
-
-              <Button type="submit" disabled={isLoading} className="w-full gap-2">
-                {isLoading ? <Sparkles className="size-4 animate-spin" /> : null}
-                {isLoading ? submittingLabel : submitLabel}
-              </Button>
-
-              {error ? (
-                <Alert variant="destructive">
-                  <AlertTitle>Sign in failed</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              ) : null}
-            </form>
-
-            {!hideRequestAccess ? (
-              <div className="mt-6 text-center text-sm">
-                <span className="text-muted-foreground mr-1">Don&apos;t have an account?</span>
-                <Button type="button" variant="link" className="h-auto p-0 text-sm" onClick={onRequestAccess}>
-                  {requestAccessLabel}
-                </Button>
-              </div>
-            ) : null}
-
-            <div className="mt-8 border-t pt-5">
-              <div className="text-muted-foreground flex items-center gap-2 text-xs">
-                <Sparkles className="size-3" />
-                <span>{enterpriseSsoLabel}</span>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    </div>
+    <StudioLogin
+      appName={appTitle}
+      welcomeTitle={heroTitle}
+      welcomeDescription={heroDescription}
+      formTitle={welcomeTitle}
+      formDescription={welcomeDescription}
+      email={email}
+      password={password}
+      onEmailChange={setEmail}
+      onPasswordChange={setPassword}
+      onSubmit={handleSubmit}
+      isLoading={isLoading}
+      error={error}
+      rememberMe={rememberMe}
+      onRememberMeChange={setRememberMe}
+      rememberMeLabel={rememberMeLabel}
+      forgotPasswordLabel={forgotPasswordLabel}
+      submitLabel={submitLabel}
+      submittingLabel={submittingLabel}
+      secureSignInLabel={enterpriseSsoLabel}
+      hideRememberMe={hideRememberMe}
+      hideForgotPassword={hideForgotPassword}
+      onForgotPassword={onForgotPassword}
+      notice={notice}
+      footer={
+        !hideRequestAccess ? (
+          <p className="text-sm text-muted-foreground text-center">
+            Don&apos;t have an account?{" "}
+            <button type="button" className="text-primary hover:underline" onClick={onRequestAccess}>
+              {requestAccessLabel}
+            </button>
+          </p>
+        ) : undefined
+      }
+    />
   );
 }
 

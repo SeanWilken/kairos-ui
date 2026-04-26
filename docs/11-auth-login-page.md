@@ -1,8 +1,8 @@
-# 11 - Auth Login Page
+# 11 - Studio Login Page
 
-`AuthLoginPage` is a reusable, app-agnostic login screen for Kairos frontends.
+`StudioLogin` is the canonical shared login surface for Kairos frontends.
 
-It mirrors the Studio login UX while keeping auth wiring in each consuming app.
+It preserves the Studio login visual language while keeping auth wiring in each consuming app.
 
 ## Export
 
@@ -11,13 +11,54 @@ import { AuthLoginPage } from "@kairosstack/ui";
 import type { LoginFormPayload } from "@kairosstack/ui";
 ```
 
+Primary shared component:
+
+```tsx
+import { StudioLogin } from "@kairosstack/ui";
+```
+
 ## Why this component exists
 
 - Keep auth entry UX consistent across Studio, Council, Core frontends.
 - Keep routing/API/session logic in app layer.
 - Avoid repeated one-off login markup and styling drift.
 
-## Basic usage
+`AuthLoginPage` remains available as a convenience wrapper with internal form state.
+
+## Basic usage (recommended)
+
+Use `StudioLogin` directly when you want app-controlled field state.
+
+```tsx
+import { StudioLogin } from "@kairosstack/ui";
+
+export function LoginScreen() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  return (
+    <StudioLogin
+      appName="Kairos"
+      welcomeTitle="Council"
+      welcomeDescription="Coordinate councils with AI and human context."
+      formTitle="Welcome back"
+      formDescription="Sign in to continue"
+      email={email}
+      password={password}
+      onEmailChange={setEmail}
+      onPasswordChange={setPassword}
+      onSubmit={(event) => {
+        event.preventDefault();
+        void login(email, password);
+      }}
+    />
+  );
+}
+```
+
+## Wrapper usage
+
+Use `AuthLoginPage` when you want the component to own local email/password/loading/error behavior.
 
 ```tsx
 import { AuthLoginPage } from "@kairosstack/ui";
@@ -45,6 +86,7 @@ export function LoginScreen() {
 
 ## Contract notes
 
+- `StudioLogin` is the preferred baseline component.
 - `onSubmit` is required and async-safe.
 - Throw from `onSubmit` to show an error alert in the component.
 - `notice` can be used for contextual banners (for example post-bootstrap success).

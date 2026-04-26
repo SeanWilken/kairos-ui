@@ -58,5 +58,6 @@ export * from "./components/MessageInteractionMenu";
 export * from "./components/ParticipantChip";
 export * from "./components/PersonalAssistant";
 export * from "./components/ProfileBuilder";
+export * from "./components/StudioLogin";
 export * from "./components/TurnCard";
 export * from "./types";
