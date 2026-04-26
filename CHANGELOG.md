@@ -13,6 +13,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Added shared profile contract types (`ProfileDraft`, trait/skill/tool/model option types) and exported them from package root.
 - Added implementation and usage documentation for profile builder and card/grid consumption (`docs/10-profile-builder-and-cards.md`).
 - Added reusable Studio-style login components with `StudioLogin` as the canonical shared surface and `AuthLoginPage` as a stateful wrapper (`docs/11-auth-login-page.md`).
+- Storybook support, with basic elements, components and composites. More to come in future push until at same level as the library.
 
 ### Changed
 
@@ -23,6 +24,8 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Added slot-level class map support for menu surfaces (`DropdownMenuContent`, `SelectContent`) to allow targeted item/content customization.
 - Updated usage docs with optimistic UI and skeleton loading patterns using TanStack Query.
 - Added reusable layout composites for app pages and shell structure (`AppShell*`, `PageWrapper*`, `Hero*`) with slot-level class map support.
+- Fixed some style issues with tabs, added more baseline components that support the other frontend repositories.
+- WIP for SplitWorkspace, more to come on that as well in future push.
 
 ## [0.1.0] - 2026-04-07
 
