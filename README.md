@@ -41,6 +41,7 @@ bun add @kairosstack/ui@alpha
 - Kairos adoption guide: `docs/05-kairos-adoption-guide.md`
 - Wizard templates: `docs/09-wizard-templates.md`
 - Profile builder and cards: `docs/10-profile-builder-and-cards.md`
+- Auth login page: `docs/11-auth-login-page.md`
 - Studio screen map: `docs/08-studio-screen-map.md`
 - Release/publishing flow: `docs/06-release-and-publishing.md`
 

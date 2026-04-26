@@ -51,6 +51,7 @@ export * from "./components/ui/use-mobile";
 export * from "./components/ui/wizard";
 export * from "./components/ActionItemRow";
 export * from "./components/AuditSplitView";
+export * from "./components/AuthLoginPage";
 export * from "./components/DecisionCard";
 export * from "./components/LeftSidebarMenu";
 export * from "./components/MessageInteractionMenu";

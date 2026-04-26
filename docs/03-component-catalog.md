@@ -66,6 +66,10 @@ Current exported primitives from `@kairosstack/ui`:
 - `ProfileCard`
 - `ProfileCardGrid`
 
+## Auth pages
+
+- `AuthLoginPage`
+
 ## Utility exports
 
 - `cn` from `utils`
