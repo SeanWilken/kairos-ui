@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Bot, X, Maximize2, Minimize2, Send, Settings, RefreshCw, Upload } from "lucide-react";
+import { Bot, X, Maximize2, Minimize2, Settings, RefreshCw, Upload } from "lucide-react";
 import { AssistantProfile } from "../types";
+import { ChatWorkspace, type ChatMessage } from "./ChatWorkspace";
 
 interface PersonalAssistantProps {
   isOpen: boolean;
@@ -61,22 +62,14 @@ export function PersonalAssistant({
     },
   ]);
   const [inputValue, setInputValue] = useState("");
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
+  const handleSendMessage = (content: string) => {
+    const trimmed = content.trim();
+    if (!trimmed) return;
 
     const userMessage: AssistantMessage = {
       id: `user-${Date.now()}`,
       role: "user",
-      content: inputValue,
+      content: trimmed,
       timestamp: new Date(),
     };
 
@@ -94,6 +87,13 @@ export function PersonalAssistant({
       setMessages((prev) => [...prev, assistantMessage]);
     }, 500);
   };
+
+  const workspaceMessages: ChatMessage[] = messages.map((message) => ({
+    id: message.id,
+    role: message.role,
+    content: message.content,
+    timestamp: message.timestamp,
+  }));
 
   if (!isOpen) return null;
 
@@ -234,62 +234,16 @@ export function PersonalAssistant({
           </div>
         )}
 
-        {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-auto px-4 py-3">
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${message.role === "user" ? "flex-row-reverse" : ""}`}
-              >
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    message.role === "assistant"
-                      ? "bg-primary/10 text-primary"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {message.role === "assistant" ? <Bot className="w-4 h-4" /> : "U"}
-                </div>
-                <div className="flex-1 max-w-[80%]">
-                  <div
-                    className={`px-3 py-2 rounded-lg text-sm ${
-                      message.role === "assistant"
-                        ? "bg-muted text-foreground"
-                        : "bg-primary text-primary-foreground"
-                    }`}
-                  >
-                    {message.content}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Input */}
-        <div className="border-t border-border px-4 py-3 flex-shrink-0">
-          <form onSubmit={handleSubmit}>
-            <div className="relative">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Ask me anything..."
-                className="w-full px-3 py-2 pr-10 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
-              />
-              <button
-                type="submit"
-                disabled={!inputValue.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-              >
-                <Send className="w-3 h-3" />
-              </button>
-            </div>
-          </form>
+        <div className="flex-1 min-h-0">
+          <ChatWorkspace
+            compact
+            hideHeader
+            messages={workspaceMessages}
+            draft={inputValue}
+            onDraftChange={setInputValue}
+            onSendMessage={handleSendMessage}
+            placeholder="Ask me anything..."
+          />
         </div>
       </Component>
     </AnimatePresence>

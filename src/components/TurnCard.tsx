@@ -1,6 +1,26 @@
 import { Message, Persona } from "../types";
 import { User, Sparkles } from "lucide-react";
 
+function getSoftAvatarColor(color: string, alpha = 0.16) {
+  const normalized = color.replace("#", "");
+  const full =
+    normalized.length === 3
+      ? normalized
+          .split("")
+          .map((char) => `${char}${char}`)
+          .join("")
+      : normalized;
+
+  if (!/^[0-9a-fA-F]{6}$/.test(full)) {
+    return "rgba(113, 113, 130, 0.16)";
+  }
+
+  const r = parseInt(full.slice(0, 2), 16);
+  const g = parseInt(full.slice(2, 4), 16);
+  const b = parseInt(full.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 interface TurnCardProps {
   message: Message;
   persona?: Persona | null;
@@ -28,10 +48,15 @@ export function TurnCard({
           </div>
         ) : resolvedPersona ? (
           <div
-            className="h-8 w-8 rounded-full flex items-center justify-center text-white"
-            style={{ backgroundColor: resolvedPersona.avatarColor }}
+            className="h-10 w-10 rounded-full p-1 flex items-center justify-center"
+            style={{ backgroundColor: getSoftAvatarColor(resolvedPersona.avatarColor) }}
           >
-            {resolvedPersona.name.charAt(0)}
+            <div
+              className="h-8 w-8 rounded-full flex items-center justify-center text-white"
+              style={{ backgroundColor: resolvedPersona.avatarColor }}
+            >
+              {resolvedPersona.name.charAt(0)}
+            </div>
           </div>
         ) : null}
       </div>

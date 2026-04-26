@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { StudioLogin } from "./StudioLogin";
+import { Login } from "./StudioLogin";
 
 export type LoginFormPayload = {
   email: string;
@@ -73,7 +73,7 @@ function AuthLoginPage({
   };
 
   return (
-    <StudioLogin
+    <Login
       appName={appTitle}
       welcomeTitle={heroTitle}
       welcomeDescription={heroDescription}

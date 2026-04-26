@@ -34,6 +34,7 @@ bun add @kairosstack/ui@alpha
 ## Documentation
 
 - Full docs hub: `docs/README.md`
+- Interactive Storybook (local): `bun run storybook`
 - Getting started: `docs/01-getting-started.md`
 - Component usage patterns: `docs/02-usage-patterns.md`
 - Component catalog: `docs/03-component-catalog.md`
@@ -44,6 +45,22 @@ bun add @kairosstack/ui@alpha
 - Auth login page: `docs/11-auth-login-page.md`
 - Studio screen map: `docs/08-studio-screen-map.md`
 - Release/publishing flow: `docs/06-release-and-publishing.md`
+
+## Interactive component testing (Storybook)
+
+Run locally before publishing:
+
+```bash
+bun run storybook
+```
+
+Build static docs site:
+
+```bash
+bun run build-storybook
+```
+
+When GitHub Pages is enabled for this repository, Storybook is automatically deployed from `main` by `.github/workflows/storybook-pages.yml`.
 
 ## Quick start
 

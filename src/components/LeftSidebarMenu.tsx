@@ -1,21 +1,40 @@
 import { motion, AnimatePresence } from "motion/react";
-import { FileText, FileSearch, Download, FileOutput, Target, X, SplitSquareHorizontal } from "lucide-react";
+import { FileText, FileSearch, Download, FileOutput, Target, X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
+export type LeftSidebarMenuItem = {
+  id: string;
+  icon: LucideIcon;
+  label: string;
+  description?: string;
+};
 
 interface LeftSidebarMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectMode: (mode: string) => void;
+  placement?: "app-shell" | "chat";
+  items?: LeftSidebarMenuItem[];
 }
 
-export function LeftSidebarMenu({ isOpen, onClose, onSelectMode }: LeftSidebarMenuProps) {
-  const menuItems = [
-    { id: "documents", icon: FileText, label: "Documents", description: "View side-by-side" },
-    { id: "audit", icon: FileSearch, label: "Audit Review", description: "See reasoning" },
-    { id: "export", icon: Download, label: "Export", description: "Save history" },
-    { id: "summarize", icon: FileOutput, label: "Summarize", description: "Get summary" },
-    { id: "create-docs", icon: FileText, label: "Create Docs", description: "Generate docs" },
-    { id: "refocus", icon: Target, label: "Refocus", description: "Reshape topic" },
-  ];
+const defaultMenuItems: LeftSidebarMenuItem[] = [
+  { id: "documents", icon: FileText, label: "Documents", description: "View side-by-side" },
+  { id: "audit", icon: FileSearch, label: "Audit Review", description: "See reasoning" },
+  { id: "export", icon: Download, label: "Export", description: "Save history" },
+  { id: "summarize", icon: FileOutput, label: "Summarize", description: "Get summary" },
+  { id: "create-docs", icon: FileText, label: "Create Docs", description: "Generate docs" },
+  { id: "refocus", icon: Target, label: "Refocus", description: "Reshape topic" },
+];
+
+export function LeftSidebarMenu({
+  isOpen,
+  onClose,
+  onSelectMode,
+  placement = "app-shell",
+  items,
+}: LeftSidebarMenuProps) {
+  const isChatPlacement = placement === "chat";
+  const menuItems = items ?? defaultMenuItems;
 
   return (
     <AnimatePresence>
@@ -27,7 +46,7 @@ export function LeftSidebarMenu({ isOpen, onClose, onSelectMode }: LeftSidebarMe
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/20 z-40"
+            className={isChatPlacement ? "absolute inset-0 bg-black/20 z-10" : "fixed inset-0 bg-black/20 z-40"}
           />
 
           {/* Menu */}
@@ -36,7 +55,11 @@ export function LeftSidebarMenu({ isOpen, onClose, onSelectMode }: LeftSidebarMe
             animate={{ x: 0 }}
             exit={{ x: -280 }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed left-16 top-0 bottom-0 w-72 bg-background border-r border-border shadow-xl z-50"
+            className={
+              isChatPlacement
+                ? "absolute left-0 top-0 bottom-0 w-72 bg-background border-r border-border shadow-xl z-20"
+                : "fixed left-16 top-0 bottom-0 w-72 bg-background border-r border-border shadow-xl z-50"
+            }
           >
             <div className="flex items-center justify-between px-4 py-4 border-b border-border">
               <h3>Split Modes & Actions</h3>

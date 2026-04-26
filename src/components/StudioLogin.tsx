@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-export type StudioLoginProps = {
+export type LoginProps = {
   appName?: string;
   welcomeTitle?: string;
   welcomeDescription?: string;
@@ -33,7 +33,7 @@ export type StudioLoginProps = {
   footer?: React.ReactNode;
 };
 
-export function StudioLogin(props: StudioLoginProps) {
+export function Login(props: LoginProps) {
   const {
     appName = "Studio",
     welcomeTitle = "Studio",
@@ -173,3 +173,6 @@ export function StudioLogin(props: StudioLoginProps) {
     </div>
   );
 }
+
+export { Login as StudioLogin };
+export type StudioLoginProps = LoginProps;

@@ -12,6 +12,7 @@ Publishing scope for this library is `@kairosstack`.
 
 ## Start here
 
+- Interactive docs (Storybook): `bun run storybook`
 - [01 - Getting Started](./01-getting-started.md)
 - [02 - Usage Patterns](./02-usage-patterns.md)
 - [03 - Component Catalog](./03-component-catalog.md)
@@ -23,6 +24,12 @@ Publishing scope for this library is `@kairosstack`.
 - [09 - Wizard Templates](./09-wizard-templates.md)
 - [10 - Profile Builder and Cards](./10-profile-builder-and-cards.md)
 - [11 - Auth Login Page](./11-auth-login-page.md)
+
+## Interactive docs deployment
+
+- Workflow: `.github/workflows/storybook-pages.yml`
+- Trigger: push to `main` (or manual run)
+- Output: GitHub Pages-hosted Storybook site
 
 ## Screenshots
 

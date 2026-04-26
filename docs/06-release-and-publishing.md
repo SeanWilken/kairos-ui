@@ -8,8 +8,9 @@ Package name and scope: `@kairosstack/ui` under npm organization `@kairosstack`.
 
 1. Push changes to GitHub
 2. Ensure CI passes (`typecheck` and `build`)
-3. Publish alpha tag to npm
-4. Consume from app repos with normal package install
+3. Validate UI changes in Storybook (`bun run storybook` or `bun run build-storybook`)
+4. Publish alpha tag to npm
+5. Consume from app repos with normal package install
 
 ## Versioning
 
@@ -34,4 +35,12 @@ bun add @kairosstack/ui@alpha
 
 - Update `CHANGELOG.md`
 - Verify package files (`npm pack`)
+- Manually verify affected components in Storybook
 - Verify install in `studio` and `core` frontend surfaces
+
+## GitHub Pages Storybook
+
+Interactive docs can be deployed automatically with `.github/workflows/storybook-pages.yml`.
+
+- Enable GitHub Pages in repository settings and set source to **GitHub Actions**.
+- On each push to `main`, Storybook builds and deploys as a static site.
