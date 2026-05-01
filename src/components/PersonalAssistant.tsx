@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Bot, X, Maximize2, Minimize2, Settings, RefreshCw, Upload } from "lucide-react";
 import { AssistantProfile } from "../types";
-import { ChatWorkspace, type ChatMessage } from "./ChatWorkspace";
+import { ChatWorkspace, type ChatInputAction, type ChatMessage } from "./ChatWorkspace";
 
 interface PersonalAssistantProps {
   isOpen: boolean;
@@ -62,6 +62,22 @@ export function PersonalAssistant({
     },
   ]);
   const [inputValue, setInputValue] = useState("");
+
+  const inputActions: ChatInputAction[] = [
+    {
+      id: "focus-group",
+      label: "Focus Group",
+      description: "Spawn a private sub-thread between selected personas.",
+      prefix: "/focus @Architect @SecurityReviewer Goal: ",
+    },
+    {
+      id: "summarize",
+      label: "Summarize",
+      description: "Request summary from recent messages.",
+      prefix: "/summarize last 30 messages",
+    },
+  ];
+
   const handleSendMessage = (content: string) => {
     const trimmed = content.trim();
     if (!trimmed) return;
@@ -243,6 +259,8 @@ export function PersonalAssistant({
             onDraftChange={setInputValue}
             onSendMessage={handleSendMessage}
             placeholder="Ask me anything..."
+            threadVariant="direct"
+            inputActions={inputActions}
           />
         </div>
       </Component>

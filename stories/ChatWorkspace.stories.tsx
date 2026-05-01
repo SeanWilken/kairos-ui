@@ -82,6 +82,7 @@ function WorkspaceStory() {
   const [messages, setMessages] = React.useState<ChatMessage[]>(starterMessages);
   const [mode, setMode] = React.useState("decide");
   const [lastRoomAction, setLastRoomAction] = React.useState("");
+  const [lastInputAction, setLastInputAction] = React.useState("");
 
   const resolvePersona = (id: string) => participants.find((participant) => participant.id === id);
 
@@ -101,6 +102,55 @@ function WorkspaceStory() {
             { id: `m-${Date.now()}`, role: "user", content: value, timestamp: new Date() },
           ]);
         }}
+        commandSpecMap={{
+          "/focus": {
+            key: "/focus",
+            label: "/focus",
+            description: "Delegate to a temporary persona working group.",
+            prefix: "/focus ",
+            tokens: [
+              {
+                key: "mentions",
+                label: "mentions",
+                kind: "mentions",
+                placeholder: "Type @names for the focus group",
+                suggestions: participants.map((p) => `@${p.name.replace(/\s+/g, "")}`),
+              },
+              {
+                key: "task",
+                label: "task",
+                kind: "task",
+                placeholder: "Define the task goal",
+                suggestions: ["Review API risks", "Draft rollout plan", "Compare alternatives"],
+              },
+              {
+                key: "context",
+                label: "context",
+                kind: "context",
+                placeholder: "Attach docs/messages/constraints",
+                suggestions: ["Release notes doc", "Last 20 messages", "Bulk edit telemetry"],
+              },
+            ],
+          },
+        }}
+        inputActions={[
+          {
+            id: "focus-group",
+            label: "Focus Group",
+            description: "Create a private sub-thread between selected personas.",
+            prefix: "/focus @Architect @SecurityReviewer Goal: ",
+          },
+          {
+            id: "summarize",
+            label: "Summarize",
+            description: "Summarize the latest context.",
+            prefix: "/summarize last 30 messages",
+          },
+        ]}
+        onInputActionSelect={(action) => setLastInputAction(action.id)}
+        onCommandTokenHintSelect={(_, tokenKey, suggestion) => {
+          setLastInputAction(`${tokenKey}:${suggestion}`);
+        }}
         actionMenuItems={[
           { id: "documents", icon: FileText, label: "Documents", description: "View side-by-side" },
           { id: "audit", icon: FileSearch, label: "Audit Review", description: "See reasoning" },
@@ -111,9 +161,10 @@ function WorkspaceStory() {
         ]}
         onActionMenuSelect={(id) => setLastRoomAction(id)}
         footerSlot={
-          lastRoomAction ? (
-            <div className="px-4 pb-2 text-xs text-muted-foreground">Last room action: {lastRoomAction}</div>
-          ) : null
+          <div className="px-4 pb-2 text-xs text-muted-foreground">
+            {lastRoomAction ? `Last room action: ${lastRoomAction}` : "No room action selected"}
+            {lastInputAction ? ` | Last input action: ${lastInputAction}` : ""}
+          </div>
         }
         rightPanel={
           <div className="h-full p-4 space-y-4">
@@ -156,7 +207,28 @@ export const CompactAssistantMode: Story = {
         <ChatWorkspace
           compact
           hideHeader
+          threadVariant="direct"
+          inputActions={[
+            {
+              id: "focus-group",
+              label: "Focus Group",
+              description: "Delegate to a small persona working group.",
+              prefix: "/focus @Architect @Analyst Goal: ",
+            },
+          ]}
           messages={messages}
+          commandSpecMap={{
+            "/focus": {
+              key: "/focus",
+              label: "/focus",
+              prefix: "/focus ",
+              tokens: [
+                { key: "mentions", label: "mentions", kind: "mentions", suggestions: ["@Architect", "@Analyst"] },
+                { key: "task", label: "task", kind: "task", suggestions: ["Summarize blockers"] },
+                { key: "context", label: "context", kind: "context", suggestions: ["Current thread"] },
+              ],
+            },
+          }}
           onSendMessage={(value) => {
             setMessages((current) => [
               ...current,
