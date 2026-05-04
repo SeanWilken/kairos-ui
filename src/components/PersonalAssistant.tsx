@@ -62,6 +62,8 @@ export function PersonalAssistant({
     },
   ]);
   const [inputValue, setInputValue] = useState("");
+  const [intentionMode, setIntentionMode] = useState("ask");
+  const [responseMode, setResponseMode] = useState("fast");
 
   const inputActions: ChatInputAction[] = [
     {
@@ -260,7 +262,14 @@ export function PersonalAssistant({
             onSendMessage={handleSendMessage}
             placeholder="Ask me anything..."
             threadVariant="direct"
+            mode={intentionMode}
+            modeOptions={["ask", "decide", "plan", "execute"]}
+            onModeChange={setIntentionMode}
+            responseMode={responseMode}
+            responseModeOptions={["fast", "thinking", "balanced"]}
+            onResponseModeChange={setResponseMode}
             inputActions={inputActions}
+            defaultControlsExpanded
           />
         </div>
       </Component>

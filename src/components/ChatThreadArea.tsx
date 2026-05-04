@@ -41,6 +41,7 @@ export type ChatCommandTokenSpec = {
 export type ChatCommandSpec = {
   key: string;
   label: string;
+  menuLabel?: string;
   description?: string;
   prefix?: string;
   icon?: React.ReactNode;
@@ -63,6 +64,9 @@ export type ChatThreadAreaProps = {
   mode?: string;
   modeOptions?: string[];
   onModeChange?: (mode: string) => void;
+  responseMode?: string;
+  responseModeOptions?: string[];
+  onResponseModeChange?: (mode: string) => void;
   commandSpecMap?: Record<string, ChatCommandSpec>;
   selectedCommandKey?: string;
   defaultCommandKey?: string;
@@ -74,6 +78,9 @@ export type ChatThreadAreaProps = {
   preComposerSlot?: React.ReactNode;
   threadVariant?: "room" | "direct";
   onUploadClick?: () => void;
+  controlsExpanded?: boolean;
+  defaultControlsExpanded?: boolean;
+  onControlsExpandedChange?: (expanded: boolean) => void;
 };
 
 function getSoftAvatarColor(color: string, alpha = 0.16) {
@@ -112,6 +119,9 @@ export function ChatThreadArea({
   mode,
   modeOptions,
   onModeChange,
+  responseMode,
+  responseModeOptions,
+  onResponseModeChange,
   commandSpecMap,
   selectedCommandKey,
   defaultCommandKey,
@@ -123,14 +133,19 @@ export function ChatThreadArea({
   preComposerSlot,
   threadVariant = "room",
   onUploadClick,
+  controlsExpanded,
+  defaultControlsExpanded = false,
+  onControlsExpandedChange,
 }: ChatThreadAreaProps) {
   const [internalDraft, setInternalDraft] = React.useState(defaultDraft);
   const [isModeMenuOpen, setIsModeMenuOpen] = React.useState(false);
   const [isInputActionMenuOpen, setIsInputActionMenuOpen] = React.useState(false);
+  const [internalControlsExpanded, setInternalControlsExpanded] = React.useState(defaultControlsExpanded);
   const [internalCommandKey, setInternalCommandKey] = React.useState(defaultCommandKey ?? "");
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const draftValue = draft ?? internalDraft;
   const commandKey = selectedCommandKey ?? internalCommandKey;
+  const isControlsExpanded = controlsExpanded ?? internalControlsExpanded;
   const commandSpecs = React.useMemo(() => Object.entries(commandSpecMap ?? {}), [commandSpecMap]);
   const activeCommandSpec = commandKey ? commandSpecMap?.[commandKey] : undefined;
 
@@ -157,6 +172,29 @@ export function ChatThreadArea({
       setInternalCommandKey(next);
     }
     onCommandKeyChange?.(next);
+  };
+
+  const setControlsExpanded = (next: boolean) => {
+    if (controlsExpanded === undefined) {
+      setInternalControlsExpanded(next);
+    }
+    onControlsExpandedChange?.(next);
+  };
+
+  const toggleModeMenu = () => {
+    setIsModeMenuOpen((open) => {
+      const next = !open;
+      if (next) setIsInputActionMenuOpen(false);
+      return next;
+    });
+  };
+
+  const toggleActionMenu = () => {
+    setIsInputActionMenuOpen((open) => {
+      const next = !open;
+      if (next) setIsModeMenuOpen(false);
+      return next;
+    });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -282,116 +320,9 @@ export function ChatThreadArea({
                 className="w-full resize-none bg-transparent pr-14 text-sm leading-6 placeholder:text-muted-foreground focus:outline-none"
                 rows={2}
               />
-              <button
-                type="submit"
-                disabled={!draftValue.trim() || !onSendMessage}
-                className="absolute right-3 bottom-2 h-10 w-10 rounded-lg bg-primary text-primary-foreground inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                title={sendLabel}
-                aria-label={sendLabel}
-              >
-                <Send className="w-4 h-4" />
-              </button>
             </div>
 
-            <div className="border-t border-border px-2 py-2 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-          {modeOptions && modeOptions.length > 0 ? (
-            <div className="relative z-[120]">
-              <button
-                type="button"
-                onClick={() => setIsModeMenuOpen((open) => !open)}
-                className="h-9 px-3 rounded-md border border-border bg-background hover:bg-accent transition-colors flex items-center gap-2 text-sm capitalize"
-              >
-                {mode ?? modeOptions[0]}
-                <ChevronDown className="w-4 h-4" />
-              </button>
-
-              {isModeMenuOpen ? (
-                  <div className="absolute bottom-full left-0 mb-2 bg-popover border border-border rounded-lg shadow-lg p-1 z-[140] min-w-[150px]">
-                  {modeOptions.map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      className="w-full text-left px-3 py-2 rounded text-sm capitalize hover:bg-accent"
-                      onClick={() => {
-                        onModeChange?.(option);
-                        setIsModeMenuOpen(false);
-                      }}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-
-          {inputActions?.length || commandSpecs.length ? (
-            <div className="relative z-[120]">
-              <button
-                type="button"
-                onClick={() => setIsInputActionMenuOpen((open) => !open)}
-                className="h-9 px-3 rounded-md border border-border bg-background hover:bg-accent transition-colors inline-flex items-center gap-2 text-sm"
-                title="Insert action template"
-                aria-label="Insert action template"
-              >
-                <WandSparkles className="w-4 h-4" />
-                Actions
-                <ChevronDown className="w-4 h-4 text-muted-foreground" />
-              </button>
-
-              {isInputActionMenuOpen ? (
-                <div className="absolute bottom-full left-0 mb-2 bg-popover border border-border rounded-lg shadow-lg p-1 z-[140] min-w-[260px] max-w-[320px]">
-                  {commandSpecs.map(([key, spec]) => (
-                    <button
-                      key={key}
-                      type="button"
-                      className="w-full text-left px-3 py-2 rounded hover:bg-accent"
-                      onClick={() => {
-                        setCommandKey(key);
-                        if (autoInsertActionPrefix && spec.prefix && !draftValue.trim()) {
-                          setDraftValue(spec.prefix);
-                        }
-                        setIsInputActionMenuOpen(false);
-                      }}
-                    >
-                      <div className="flex items-center gap-2 text-sm">
-                        {spec.icon}
-                        <span>{spec.label}</span>
-                      </div>
-                      {spec.description ? <div className="text-xs text-muted-foreground">{spec.description}</div> : null}
-                    </button>
-                  ))}
-
-                  {commandSpecs.length && inputActions?.length ? <div className="my-1 border-t border-border" /> : null}
-
-                  {inputActions?.map((action) => (
-                    <button
-                      key={action.id}
-                      type="button"
-                      disabled={action.disabled}
-                      className="w-full text-left px-3 py-2 rounded hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={() => {
-                        onInputActionSelect?.(action);
-                        if (autoInsertActionPrefix && action.prefix && !draftValue.trim()) {
-                          setDraftValue(action.prefix);
-                        }
-                        setIsInputActionMenuOpen(false);
-                      }}
-                    >
-                      <div className="flex items-center gap-2 text-sm">
-                        {action.icon}
-                        <span>{action.label}</span>
-                      </div>
-                      {action.description ? <div className="text-xs text-muted-foreground">{action.description}</div> : null}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-              </div>
-
+            <div className="px-2 py-2 flex items-center justify-between gap-2">
               <button
                 type="button"
                 onClick={onUploadClick}
@@ -401,10 +332,146 @@ export function ChatThreadArea({
               >
                 <Plus className="w-4 h-4" />
               </button>
+
+              <div className="w-8" />
+
+              <button
+                type="submit"
+                disabled={!draftValue.trim() || !onSendMessage}
+                className="h-9 w-9 rounded-lg bg-primary text-primary-foreground inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                title={sendLabel}
+                aria-label={sendLabel}
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="border-t border-border px-2 py-2">
+              <div className="flex flex-wrap items-center gap-2 justify-between">
+                <div className="flex flex-wrap items-center gap-2">
+                  {modeOptions && modeOptions.length > 0 ? (
+                    <div className="relative z-[120]">
+                      <button
+                        type="button"
+                        onClick={toggleModeMenu}
+                        className="h-9 px-3 rounded-md border border-border bg-background hover:bg-accent transition-colors flex items-center gap-2 text-sm capitalize"
+                      >
+                        {mode ?? modeOptions[0]}
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+
+                      {isModeMenuOpen ? (
+                        <div className="absolute bottom-full left-0 mb-2 bg-popover border border-border rounded-lg shadow-lg p-1 z-[140] min-w-[150px]">
+                          {modeOptions.map((option) => (
+                            <button
+                              key={option}
+                              type="button"
+                              className="w-full text-left px-3 py-2 rounded text-sm capitalize hover:bg-accent"
+                              onClick={() => {
+                                onModeChange?.(option);
+                                setIsModeMenuOpen(false);
+                              }}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+
+                  {responseModeOptions && responseModeOptions.length > 0 ? (
+                    <select
+                      value={responseMode ?? responseModeOptions[0]}
+                      onChange={(event) => onResponseModeChange?.(event.target.value)}
+                      className="h-9 px-3 rounded-md border border-border bg-background text-sm"
+                    >
+                      {responseModeOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  ) : null}
+                {inputActions?.length || commandSpecs.length ? (
+                  <div className="relative z-[120]">
+                    <button
+                      type="button"
+                      onClick={toggleActionMenu}
+                      className="h-9 px-3 rounded-md border border-border bg-background hover:bg-accent transition-colors inline-flex items-center gap-2 text-sm"
+                      title="Insert action template"
+                      aria-label="Insert action template"
+                    >
+                      <WandSparkles className="w-4 h-4" />
+                      Actions
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    </button>
+
+                    {isInputActionMenuOpen ? (
+                      <div className="absolute bottom-full right-0 mb-2 bg-popover border border-border rounded-lg shadow-lg p-1 z-[140] min-w-[260px] max-w-[320px]">
+                        {commandSpecs.map(([key, spec]) => (
+                          <button
+                            key={key}
+                            type="button"
+                            className="w-full text-left px-3 py-2 rounded hover:bg-accent"
+                            onClick={() => {
+                              setCommandKey(key);
+                              if (autoInsertActionPrefix && spec.prefix && !draftValue.trim()) {
+                                setDraftValue(spec.prefix);
+                              }
+                              setIsInputActionMenuOpen(false);
+                            }}
+                          >
+                            <div className="flex items-center gap-2 text-sm">
+                              {spec.icon}
+                              <span>{spec.menuLabel ?? spec.label}</span>
+                            </div>
+                            {spec.description ? <div className="text-xs text-muted-foreground">{spec.description}</div> : null}
+                          </button>
+                        ))}
+
+                        {commandSpecs.length && inputActions?.length ? <div className="my-1 border-t border-border" /> : null}
+
+                        {inputActions?.map((action) => (
+                          <button
+                            key={action.id}
+                            type="button"
+                            disabled={action.disabled}
+                            className="w-full text-left px-3 py-2 rounded hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={() => {
+                              onInputActionSelect?.(action);
+                              if (autoInsertActionPrefix && action.prefix && !draftValue.trim()) {
+                                setDraftValue(action.prefix);
+                              }
+                              setIsInputActionMenuOpen(false);
+                            }}
+                          >
+                            <div className="flex items-center gap-2 text-sm">
+                              {action.icon}
+                              <span>{action.label}</span>
+                            </div>
+                            {action.description ? <div className="text-xs text-muted-foreground">{action.description}</div> : null}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setControlsExpanded(!isControlsExpanded)}
+                  className="h-9 w-12 rounded-md border border-border text-muted-foreground inline-flex items-center justify-center hover:bg-accent"
+                  title={isControlsExpanded ? "Collapse options" : "Expand options"}
+                  aria-label={isControlsExpanded ? "Collapse options" : "Expand options"}
+                >
+                  <ChevronDown className={cn("w-5 h-5 transition-transform", isControlsExpanded ? "rotate-180" : "rotate-0")} />
+                </button>
+              </div>
             </div>
           </div>
         </form>
-        {activeCommandSpec?.tokens?.length ? (
+        {activeCommandSpec?.tokens?.length && (isControlsExpanded || !compact) ? (
           <div className="mx-auto mt-2 space-y-1 max-w-3xl">
             {activeCommandSpec.tokens.map((token) => (
               <div key={token.key} className="flex flex-wrap items-center gap-1.5 text-xs">

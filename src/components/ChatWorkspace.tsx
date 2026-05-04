@@ -3,6 +3,7 @@ import { Menu, PanelRightClose, PanelRightDashed } from "lucide-react";
 
 import { LeftSidebarMenu, type LeftSidebarMenuItem } from "./LeftSidebarMenu";
 import {
+  type ChatCommandSpec,
   ChatThreadArea,
   type ChatInputAction,
   type ChatMessage,
@@ -10,7 +11,7 @@ import {
 } from "./ChatThreadArea";
 import { cn } from "./ui/utils";
 
-export type { ChatInputAction, ChatMessage, ChatParticipant } from "./ChatThreadArea";
+export type { ChatCommandSpec, ChatInputAction, ChatMessage, ChatParticipant } from "./ChatThreadArea";
 
 export type ChatWorkspaceProps = {
   className?: string;
@@ -31,10 +32,22 @@ export type ChatWorkspaceProps = {
   mode?: string;
   modeOptions?: string[];
   onModeChange?: (mode: string) => void;
+  responseMode?: string;
+  responseModeOptions?: string[];
+  onResponseModeChange?: (mode: string) => void;
+  commandSpecMap?: Record<string, ChatCommandSpec>;
+  selectedCommandKey?: string;
+  defaultCommandKey?: string;
+  onCommandKeyChange?: (key: string) => void;
+  onCommandTokenHintSelect?: (commandKey: string, tokenKey: string, suggestion: string) => void;
   inputActions?: ChatInputAction[];
   onInputActionSelect?: (action: ChatInputAction) => void;
   autoInsertActionPrefix?: boolean;
   threadVariant?: "room" | "direct";
+  controlsExpanded?: boolean;
+  defaultControlsExpanded?: boolean;
+  onControlsExpandedChange?: (expanded: boolean) => void;
+  onUploadClick?: () => void;
   rightPanel?: React.ReactNode;
   rightPanelWidth?: number;
   rightPanelOpen?: boolean;
@@ -70,10 +83,22 @@ export function ChatWorkspace({
   mode,
   modeOptions,
   onModeChange,
+  responseMode,
+  responseModeOptions,
+  onResponseModeChange,
+  commandSpecMap,
+  selectedCommandKey,
+  defaultCommandKey,
+  onCommandKeyChange,
+  onCommandTokenHintSelect,
   inputActions,
   onInputActionSelect,
   autoInsertActionPrefix = true,
   threadVariant = "room",
+  controlsExpanded,
+  defaultControlsExpanded,
+  onControlsExpandedChange,
+  onUploadClick,
   rightPanel,
   rightPanelWidth = 420,
   rightPanelOpen,
@@ -197,11 +222,23 @@ export function ChatWorkspace({
           mode={mode}
           modeOptions={modeOptions}
           onModeChange={onModeChange}
+          responseMode={responseMode}
+          responseModeOptions={responseModeOptions}
+          onResponseModeChange={onResponseModeChange}
+          commandSpecMap={commandSpecMap}
+          selectedCommandKey={selectedCommandKey}
+          defaultCommandKey={defaultCommandKey}
+          onCommandKeyChange={onCommandKeyChange}
+          onCommandTokenHintSelect={onCommandTokenHintSelect}
           inputActions={inputActions}
           onInputActionSelect={onInputActionSelect}
           autoInsertActionPrefix={autoInsertActionPrefix}
           preComposerSlot={footerSlot}
           threadVariant={threadVariant}
+          controlsExpanded={controlsExpanded}
+          defaultControlsExpanded={defaultControlsExpanded}
+          onControlsExpandedChange={onControlsExpandedChange}
+          onUploadClick={onUploadClick}
         />
       </div>
 

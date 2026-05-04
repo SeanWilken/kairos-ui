@@ -6,7 +6,9 @@ import {
   Minimize2,
   MoreHorizontal,
   Plus,
+  RefreshCcw,
   Save,
+  Shuffle,
   X,
 } from "lucide-react";
 
@@ -108,6 +110,11 @@ export type SplitWorkspaceProps = {
   workspaceContext?: Record<string, unknown>;
   title?: string;
   subtitle?: string;
+  showTopBar?: boolean;
+  showTopBarActions?: boolean;
+  showTopBarMenuButton?: boolean;
+  showActionBarBelowHeader?: boolean;
+  showTopBarAddButton?: boolean;
 };
 
 type PaneRect = { x: number; y: number; width: number; height: number };
@@ -143,11 +150,19 @@ export function SplitWorkspace({
   workspaceContext,
   title = "SplitWorkspace",
   subtitle,
+  showTopBar = true,
+  showTopBarActions = true,
+  showTopBarMenuButton = true,
+  showActionBarBelowHeader = false,
+  showTopBarAddButton = false,
 }: SplitWorkspaceProps) {
   const [isActionMenuOpen, setIsActionMenuOpen] = React.useState(false);
   const [paneMenuOpenId, setPaneMenuOpenId] = React.useState<string | null>(null);
   const [expandedPaneId, setExpandedPaneId] = React.useState<string | null>(null);
   const [paneSelections, setPaneSelections] = React.useState<Record<string, string>>({});
+  const [paneReloadKeys, setPaneReloadKeys] = React.useState<Record<string, number>>({});
+  const [isReassignMode, setIsReassignMode] = React.useState(false);
+  const [draggedSelectionId, setDraggedSelectionId] = React.useState<string | null>(null);
   const [canvasRects, setCanvasRects] = React.useState<Record<string, PaneRect>>(() =>
     Object.fromEntries(
       panes.map((pane, index) => [
@@ -335,6 +350,8 @@ export function SplitWorkspace({
       return true;
     });
 
+    const selectedOptionId = paneSelections[pane.id];
+
     return (
       <DynamicWorkspacePane
         options={options}
@@ -351,18 +368,43 @@ export function SplitWorkspace({
         renderLoaded={(option) => {
           const mapped = loadOptionRegistry?.[option.id];
           if (mapped?.render) {
-            return mapped.render(context, pane);
+            return <React.Fragment key={`${pane.id}-${selectedOptionId ?? option.id}-${paneReloadKeys[pane.id] ?? 0}`}>{mapped.render(context, pane)}</React.Fragment>;
           }
 
           return (
             <div className="h-full min-h-0 flex items-center justify-center p-6 text-sm text-muted-foreground">
-              Loaded: {option.title}
+              {option.title}
             </div>
           );
         }}
       />
     );
   };
+
+  const getPaneDisplayLabel = (pane: SplitWorkspacePane, index: number) => {
+    const selectedId = paneSelections[pane.id];
+    if (selectedId) {
+      const mapped = loadOptionRegistry?.[selectedId];
+      if (mapped?.title) return mapped.title;
+      const option = pane.loadOptions?.find((entry) => entry.id === selectedId) ?? defaultLoadOptions?.find((entry) => entry.id === selectedId);
+      if (option?.title) return option.title;
+    }
+    return pane.loadedLabel ?? pane.title ?? `Pane ${index + 1}`;
+  };
+
+  const loadedSelectionEntries = React.useMemo(() => {
+    return panes
+      .map((pane, index) => {
+        const optionId = paneSelections[pane.id];
+        if (!optionId) return null;
+        return {
+          paneId: pane.id,
+          optionId,
+          label: getPaneDisplayLabel(pane, index),
+        };
+      })
+      .filter((entry): entry is { paneId: string; optionId: string; label: string } => Boolean(entry));
+  }, [panes, paneSelections]);
 
   const renderPaneHeader = (
     pane: SplitWorkspacePane,
@@ -373,11 +415,51 @@ export function SplitWorkspace({
     <div
       className={cn("h-10 border-b border-border px-3 flex items-center justify-between gap-2", draggable ? "cursor-move" : "")}
       onMouseDown={onMouseDown}
+      onDragOver={isReassignMode ? (event) => event.preventDefault() : undefined}
+      onDrop={
+        isReassignMode
+          ? (event) => {
+              event.preventDefault();
+              const optionId = event.dataTransfer.getData("text/plain") || draggedSelectionId;
+              if (!optionId) return;
+              setPaneSelections((current) => ({ ...current, [pane.id]: optionId }));
+              setDraggedSelectionId(null);
+            }
+          : undefined
+      }
     >
       <div className="min-w-0">
-        <h4 className="truncate text-sm">{pane.loadedLabel ?? pane.title ?? `Pane ${index + 1}`}</h4>
+        <h4 className="truncate text-sm">{getPaneDisplayLabel(pane, index)}</h4>
       </div>
       <div className="flex items-center gap-1">
+        {paneSelections[pane.id] ? (
+          <>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                setPaneSelections((current) => ({ ...current, [pane.id]: "" }));
+              }}
+              className="h-7 w-7 rounded-md border border-border text-muted-foreground hover:bg-accent inline-flex items-center justify-center"
+              title="Change content"
+              aria-label="Change content"
+            >
+              <Shuffle className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                setPaneReloadKeys((current) => ({ ...current, [pane.id]: (current[pane.id] ?? 0) + 1 }));
+              }}
+              className="h-7 w-7 rounded-md border border-border text-muted-foreground hover:bg-accent inline-flex items-center justify-center"
+              title="Refresh pane"
+              aria-label="Refresh pane"
+            >
+              <RefreshCcw className="w-3.5 h-3.5" />
+            </button>
+          </>
+        ) : null}
         {pane.menuActions?.length ? (
           <div className="relative">
             <button
@@ -465,17 +547,20 @@ export function SplitWorkspace({
         items={actionMenuItems}
       />
 
+      {showTopBar ? (
       <div className="h-14 border-b border-border px-3 flex items-center justify-between gap-3 bg-background">
         <div className="flex items-center gap-2 min-w-0">
-          <button
-            type="button"
-            onClick={() => setIsActionMenuOpen(true)}
-            className="h-10 w-10 rounded-md border border-border inline-flex items-center justify-center hover:bg-accent"
-            title="Open actions"
-            aria-label="Open actions"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+          {showTopBarMenuButton ? (
+            <button
+              type="button"
+              onClick={() => setIsActionMenuOpen(true)}
+              className="h-10 w-10 rounded-md border border-border inline-flex items-center justify-center hover:bg-accent"
+              title="Open actions"
+              aria-label="Open actions"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          ) : null}
 
           {workspaceOptions?.length ? (
             <div className="min-w-[240px] max-w-[420px]">
@@ -504,7 +589,7 @@ export function SplitWorkspace({
         </div>
 
         <div className="flex items-center gap-2">
-          {layout === "canvas" ? (
+          {showTopBarActions && layout === "canvas" ? (
             <button
               type="button"
               onClick={autoArrangeEvenGrid}
@@ -516,17 +601,65 @@ export function SplitWorkspace({
             </button>
           ) : null}
 
-          <button
-            type="button"
-            onClick={onSaveLayout}
-            className="h-10 px-3 rounded-md border border-border text-sm inline-flex items-center gap-2 hover:bg-accent"
-            title={saveLabel}
-          >
-            <Save className="w-4 h-4" />
-            {saveLabel}
-          </button>
+          {showTopBarActions ? (
+            <button
+              type="button"
+              onClick={onSaveLayout}
+              className="h-10 px-3 rounded-md border border-border text-sm inline-flex items-center gap-2 hover:bg-accent"
+              title={saveLabel}
+            >
+              <Save className="w-4 h-4" />
+              {saveLabel}
+            </button>
+          ) : null}
+
+          {showTopBarActions ? (
+            <button
+              type="button"
+              onClick={() => setIsReassignMode((current) => !current)}
+              className={cn("h-10 px-3 rounded-md border text-sm hover:bg-accent", isReassignMode ? "border-primary bg-accent" : "border-border")}
+              title="Rearrange loaded content"
+            >
+              Rearrange
+            </button>
+          ) : null}
         </div>
       </div>
+      ) : null}
+
+      {showTopBar && showActionBarBelowHeader ? (
+        <div className="h-11 border-b border-border px-3 flex items-center gap-1 bg-background overflow-x-auto">
+          <div className="hidden md:flex items-center gap-1">
+            {loadedSelectionEntries.map((entry) => (
+              <button
+                key={`bar-${entry.paneId}-${entry.optionId}`}
+                type="button"
+                onClick={() => setExpandedPaneId(entry.paneId)}
+                draggable={isReassignMode}
+                onDragStart={(event) => {
+                  setDraggedSelectionId(entry.optionId);
+                  event.dataTransfer.setData("text/plain", entry.optionId);
+                }}
+                className="h-8 px-3 rounded-md border border-border text-xs whitespace-nowrap hover:bg-accent"
+              >
+                {entry.label}
+              </button>
+            ))}
+            {layout === "canvas" ? (
+              <button
+                type="button"
+                onClick={onAddPaneRequest}
+                disabled={!onAddPaneRequest}
+                className="h-8 w-8 rounded-md border border-border text-muted-foreground inline-flex items-center justify-center hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+                title={addPaneLabel}
+                aria-label={addPaneLabel}
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
 
       <div className="flex-1 min-h-[20rem] relative">
       {layout === "split" ? (
@@ -631,7 +764,7 @@ export function SplitWorkspace({
         </div>
       )}
 
-      {layout === "canvas" && showAddPaneButton ? (
+      {layout === "canvas" && showAddPaneButton && !showTopBarAddButton ? (
         <div className="absolute bottom-4 right-4 z-[80] flex items-center gap-2 pointer-events-none">
           {showAddPaneLabel ? (
             <span className="pointer-events-none px-2 py-1 rounded bg-background border border-border text-xs text-foreground shadow-sm">

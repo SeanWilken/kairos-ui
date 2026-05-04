@@ -3,13 +3,13 @@ import { Calendar, FileSearch, FileText, ListChecks, MessageSquareText, Users } 
 
 import {
   ActionItemRow,
-  ChatThreadArea,
   DecisionCard,
   ParticipantChip,
   type ChatMessage,
   type ChatParticipant,
   type SplitWorkspaceLoadOptionSpec,
 } from "../src";
+import { ChatThreadArea } from "../src/components/ChatThreadArea";
 import type { ActionItem, Decision } from "../src/types";
 
 export const paneParticipants: ChatParticipant[] = [
@@ -61,13 +61,31 @@ export const paneDecisions: Decision[] = [
 export const paneLoadOptionKeys = ["thread-alex", "participants", "actions", "decisions", "documents", "calendar"];
 
 export function createPaneLoadRegistry(): Record<string, SplitWorkspaceLoadOptionSpec> {
+  const ThreadArea = () => {
+    const [mode, setMode] = React.useState("decide");
+    const [responseMode, setResponseMode] = React.useState("balanced");
+    return (
+      <ChatThreadArea
+        messages={paneMessages}
+        participants={paneParticipants}
+        placeholder="Ask a question..."
+        mode={mode}
+        modeOptions={["ask", "decide", "plan", "execute"]}
+        onModeChange={setMode}
+        responseMode={responseMode}
+        responseModeOptions={["fast", "thinking", "balanced"]}
+        onResponseModeChange={setResponseMode}
+      />
+    );
+  };
+
   return {
     "thread-alex": {
       id: "thread-alex",
       title: "Thread: Alex Chen",
       description: "Load this chat thread and related windows",
       icon: <MessageSquareText className="w-4 h-4" />,
-      render: () => <ChatThreadArea messages={paneMessages} participants={paneParticipants} placeholder="Ask a question..." />,
+      render: () => <ThreadArea />,
     },
     participants: {
       id: "participants",

@@ -53,7 +53,6 @@ export * from "./components/ActionItemRow";
 export * from "./components/AuditSplitView";
 export * from "./components/AuthLoginPage";
 export * from "./components/ChatWorkspace";
-export * from "./components/ChatThreadArea";
 export * from "./components/ChatThreadList";
 export * from "./components/DecisionCard";
 export * from "./components/DynamicWorkspacePane";

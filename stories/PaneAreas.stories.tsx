@@ -5,10 +5,10 @@ import { CalendarDays, FileText } from "lucide-react";
 import {
   ActionItemRow,
   Calendar,
-  ChatThreadArea,
   DecisionCard,
   ParticipantChip,
 } from "../src";
+import { ChatThreadArea } from "../src/components/ChatThreadArea";
 import { paneActionItems, paneDecisions, paneMessages, paneParticipants } from "./paneAreaFixtures";
 
 const meta = {
@@ -22,11 +22,25 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const ThreadArea: Story = {
-  render: () => (
-    <div className="h-[640px] border border-border rounded-lg overflow-hidden">
-      <ChatThreadArea participants={paneParticipants} messages={paneMessages} placeholder="Message thread..." />
-    </div>
-  ),
+  render: () => {
+    const [mode, setMode] = React.useState("ask");
+    const [responseMode, setResponseMode] = React.useState("balanced");
+    return (
+      <div className="h-[640px] border border-border rounded-lg overflow-hidden">
+        <ChatThreadArea
+          participants={paneParticipants}
+          messages={paneMessages}
+          placeholder="Message thread..."
+          mode={mode}
+          modeOptions={["ask", "decide", "plan", "execute"]}
+          onModeChange={setMode}
+          responseMode={responseMode}
+          responseModeOptions={["fast", "thinking", "balanced"]}
+          onResponseModeChange={setResponseMode}
+        />
+      </div>
+    );
+  },
 };
 
 export const ParticipantsArea: Story = {

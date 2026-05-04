@@ -67,7 +67,7 @@ const decisions: Decision[] = [
 ];
 
 const meta = {
-  title: "Chat/Workspace",
+  title: "Chat/Thread Workspace",
   component: ChatWorkspace,
   tags: ["autodocs"],
   parameters: {
@@ -81,6 +81,7 @@ type Story = StoryObj<typeof meta>;
 function WorkspaceStory() {
   const [messages, setMessages] = React.useState<ChatMessage[]>(starterMessages);
   const [mode, setMode] = React.useState("decide");
+  const [responseMode, setResponseMode] = React.useState("balanced");
   const [lastRoomAction, setLastRoomAction] = React.useState("");
   const [lastInputAction, setLastInputAction] = React.useState("");
 
@@ -89,13 +90,16 @@ function WorkspaceStory() {
   return (
     <div style={{ height: "100dvh" }}>
       <ChatWorkspace
-        title="Sprint Planning Council"
-        subtitle="Council room"
+        title="Sprint Planning Message Center"
+        subtitle="Message center"
         participants={participants}
         messages={messages}
         mode={mode}
         modeOptions={["ask", "debate", "decide", "plan", "execute"]}
         onModeChange={setMode}
+        responseMode={responseMode}
+        responseModeOptions={["fast", "thinking", "balanced"]}
+        onResponseModeChange={setResponseMode}
         onSendMessage={(value) => {
           setMessages((current) => [
             ...current,
@@ -106,6 +110,7 @@ function WorkspaceStory() {
           "/focus": {
             key: "/focus",
             label: "/focus",
+            menuLabel: "Focus Group",
             description: "Delegate to a temporary persona working group.",
             prefix: "/focus ",
             tokens: [
@@ -169,6 +174,17 @@ function WorkspaceStory() {
         rightPanel={
           <div className="h-full p-4 space-y-4">
             <div>
+              <h4 className="mb-2">Participants</h4>
+              <div className="space-y-2">
+                {participants.map((participant) => (
+                  <div key={participant.id} className="rounded-md border border-border p-2 text-sm">
+                    <div>{participant.name}</div>
+                    <div className="text-xs text-muted-foreground">{participant.role}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
               <h4 className="mb-2">Action Items</h4>
               {actionItems.map((item) => (
                 <ActionItemRow key={item.id} item={item} resolvePersona={resolvePersona} />
@@ -201,6 +217,8 @@ export const CompactAssistantMode: Story = {
         timestamp: new Date(),
       },
     ]);
+    const [mode, setMode] = React.useState("ask");
+    const [responseMode, setResponseMode] = React.useState("fast");
 
     return (
       <div className="h-[520px] w-[380px] border border-border rounded-lg overflow-hidden">
@@ -208,6 +226,12 @@ export const CompactAssistantMode: Story = {
           compact
           hideHeader
           threadVariant="direct"
+          mode={mode}
+          modeOptions={["ask", "decide", "plan", "execute"]}
+          onModeChange={setMode}
+          responseMode={responseMode}
+          responseModeOptions={["fast", "thinking", "balanced"]}
+          onResponseModeChange={setResponseMode}
           inputActions={[
             {
               id: "focus-group",
@@ -221,6 +245,7 @@ export const CompactAssistantMode: Story = {
             "/focus": {
               key: "/focus",
               label: "/focus",
+              menuLabel: "Focus Group",
               prefix: "/focus ",
               tokens: [
                 { key: "mentions", label: "mentions", kind: "mentions", suggestions: ["@Architect", "@Analyst"] },

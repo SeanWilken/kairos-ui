@@ -148,7 +148,7 @@ const decisions: Decision[] = [
 const modeOptions: RoomMode[] = ["ask", "debate", "decide", "plan", "execute"];
 
 const meta = {
-  title: "Chat/Council Workspace",
+  title: "Chat/Message Center",
   tags: ["autodocs"],
   parameters: {
     layout: "fullscreen",
@@ -298,8 +298,8 @@ function ChatWorkspaceStory() {
                   <Menu className="w-5 h-5" />
                 </button>
                 <div>
-                  <h2>Sprint Planning Council</h2>
-                  <p className="text-sm text-muted-foreground">Council room • {messages.length} messages</p>
+                  <h2>Sprint Planning Message Center</h2>
+                  <p className="text-sm text-muted-foreground">Message center • {messages.length} messages</p>
                 </div>
               </div>
             </div>
@@ -505,6 +505,6 @@ function ChatWorkspaceStory() {
   );
 }
 
-export const CouncilChatBuilder: Story = {
+export const MessageCenterBuilder: Story = {
   render: () => <ChatWorkspaceStory />,
 };

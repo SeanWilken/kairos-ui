@@ -80,7 +80,7 @@ export function DynamicWorkspacePane({
       <div className={cn("h-full min-h-0 flex flex-col", className)}>
         {showReset ? (
           <div className="h-10 border-b border-border px-3 flex items-center justify-between gap-2">
-            <span className="text-xs text-muted-foreground truncate">Loaded: {selectedOption.title}</span>
+            <span className="text-xs text-muted-foreground truncate">{selectedOption.title}</span>
             <button
               type="button"
               onClick={reset}
@@ -127,3 +127,5 @@ export function DynamicWorkspacePane({
     </div>
   );
 }
+
+export const DynamicMenuSelector = DynamicWorkspacePane;
