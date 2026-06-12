@@ -61,3 +61,5 @@ export function MessageInteractionMenu({ isOpen, position, onClose, onAction, me
     </AnimatePresence>
   );
 }
+
+export const ThreadPostMenu = MessageInteractionMenu;

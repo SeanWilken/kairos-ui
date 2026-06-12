@@ -495,7 +495,7 @@ function ProfileBuilderWizard({
                 id="profile-name"
                 value={draft.name}
                 onChange={(event) => updateDraft("name", event.target.value)}
-                placeholder={currentKind === "persona" ? "Kairos Analyst" : "Alex Rivera"}
+                placeholder={currentKind === "persona" ? "myAI Analyst" : "Alex Rivera"}
               />
             </div>
             <div className="space-y-3">

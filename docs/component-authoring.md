@@ -2,11 +2,11 @@
 
 Use this guide when adding or updating primitives in `src/components/ui`.
 
-This guide intentionally follows shadcn/ui conventions for component structure, accessibility defaults, and composable APIs, then layers Kairos packaging/boundary rules on top.
+This guide intentionally follows shadcn/ui conventions for component structure, accessibility defaults, and composable APIs, then layers myAI packaging/boundary rules on top.
 
 ## Upstream reference
 
-When adding or refactoring primitives, align structure and behavior with shadcn/ui first, then apply Kairos-specific packaging constraints:
+When adding or refactoring primitives, align structure and behavior with shadcn/ui first, then apply myAI-specific packaging constraints:
 
 - https://ui.shadcn.com/
 - https://github.com/shadcn-ui/ui
@@ -51,7 +51,7 @@ When this pattern is used, keep slot names consistent across related families (`
 
 ## 4) Boundaries
 
-- Do not import from `kairos-core`, `kairos-studio`, or app repos.
+- Do not import from `myai-core`, `myai-studio`, or app repos.
 - Do not perform data fetching.
 - Do not include business logic in primitives.
 

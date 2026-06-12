@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Menu, PanelRightClose, PanelRightDashed } from "lucide-react";
+import { Menu, PanelRightClose, PanelRightOpen } from "lucide-react";
 
 import { LeftSidebarMenu, type LeftSidebarMenuItem } from "./LeftSidebarMenu";
 import {
@@ -62,6 +62,9 @@ export type ChatWorkspaceProps = {
   defaultActionMenuOpen?: boolean;
   onActionMenuOpenChange?: (open: boolean) => void;
   onActionMenuSelect?: (id: string) => void;
+  chatMenuOffsetLeft?: number;
+  messageContentFormat?: "text" | "markdown";
+  renderMessageContent?: (message: ChatMessage) => React.ReactNode;
 };
 
 export function ChatWorkspace({
@@ -113,6 +116,9 @@ export function ChatWorkspace({
   defaultActionMenuOpen = false,
   onActionMenuOpenChange,
   onActionMenuSelect,
+  chatMenuOffsetLeft = 0,
+  messageContentFormat = "text",
+  renderMessageContent,
 }: ChatWorkspaceProps) {
   const [internalRightPanelOpen, setInternalRightPanelOpen] = React.useState(defaultRightPanelOpen);
   const [internalActionMenuOpen, setInternalActionMenuOpen] = React.useState(defaultActionMenuOpen);
@@ -164,15 +170,15 @@ export function ChatWorkspace({
 
               <div className="flex items-center gap-2">
                 {headerEndSlot}
-                {hasRightPanel && isRightPanelOpen ? (
+                {hasRightPanel ? (
                   <button
                     type="button"
-                    onClick={() => setRightPanelOpen(false)}
+                    onClick={() => setRightPanelOpen(!isRightPanelOpen)}
                     className="h-9 w-9 rounded-md border border-border inline-flex items-center justify-center text-muted-foreground hover:bg-accent"
-                    title="Hide panel"
-                    aria-label="Hide panel"
+                    title={isRightPanelOpen ? "Hide panel" : "Open panel"}
+                    aria-label={isRightPanelOpen ? "Hide panel" : "Open panel"}
                   >
-                    <PanelRightClose className="w-4 h-4" />
+                    {isRightPanelOpen ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}
                   </button>
                 ) : null}
               </div>
@@ -189,22 +195,9 @@ export function ChatWorkspace({
               setActionMenuOpen(false);
             }}
             placement="chat"
+            chatOffsetLeft={chatMenuOffsetLeft}
             items={actionMenuItems}
           />
-        ) : null}
-
-        {!hideHeader && hasRightPanel && !isRightPanelOpen ? (
-          <div className="absolute right-0 top-0 z-40 h-14 flex items-center">
-            <button
-              type="button"
-              onClick={() => setRightPanelOpen(true)}
-              className="w-9 h-10 bg-background border border-r-0 border-border rounded-l-md inline-flex items-center justify-center hover:bg-accent"
-              title="Open panel"
-              aria-label="Open panel"
-            >
-              <PanelRightDashed className="w-4 h-4 text-muted-foreground" />
-            </button>
-          </div>
         ) : null}
 
         <ChatThreadArea
@@ -239,6 +232,8 @@ export function ChatWorkspace({
           defaultControlsExpanded={defaultControlsExpanded}
           onControlsExpandedChange={onControlsExpandedChange}
           onUploadClick={onUploadClick}
+          messageContentFormat={messageContentFormat}
+          renderMessageContent={renderMessageContent}
         />
       </div>
 

@@ -1,34 +1,34 @@
 # 01 - Getting Started
 
-This guide gets a consumer app running with `@kairosstack/ui` quickly.
+This guide gets a consumer app running with `@myai-tech/myui` quickly.
 
 ## Requirements
 
 - React 18+
-- Tailwind v4 if you use `@kairosstack/ui/styles.css`
+- Tailwind v4 if you use `@myai-tech/myui/styles.css`
 
 ## Install from npm (alpha)
 
 ```bash
-bun add @kairosstack/ui@alpha
+bun add @myai-tech/myui@alpha
 ```
 
 Or:
 
 ```bash
-npm install @kairosstack/ui@alpha
+npm install @myai-tech/myui@alpha
 ```
 
 ## Use in app entry
 
 ```tsx
-import "@kairosstack/ui/styles.css";
+import "@myai-tech/myui/styles.css";
 ```
 
 ## Use in components
 
 ```tsx
-import { Button, Card, CardContent, CardHeader, CardTitle } from "@kairosstack/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle } from "@myai-tech/myui";
 
 export function WelcomeCard() {
   return (

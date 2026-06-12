@@ -1,6 +1,6 @@
 # 03 - Component Catalog
 
-Current exported primitives from `@kairosstack/ui`:
+Current exported primitives from `@myai-tech/myui`:
 
 ## Layout and structure
 
@@ -54,6 +54,15 @@ Current exported primitives from `@kairosstack/ui`:
 - `Tooltip`
 - `Toaster`
 
+## Document viewers
+
+- `ChatMarkdown`
+- `MarkdownViewer`
+- `PdfViewer`
+- `DelimitedTextViewer`
+- `SpreadsheetViewer`
+- `DocumentViewer`
+
 ## Commanding and navigation helpers
 
 - `Command`
@@ -74,6 +83,11 @@ Current exported primitives from `@kairosstack/ui`:
 ## Utility exports
 
 - `cn` from `utils`
+
+## Knowledge and workspace composites
+
+- `KnowledgeNodeMap`
+- `NodeDetailsPane`
 
 ## Notes
 

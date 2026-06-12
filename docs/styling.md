@@ -1,6 +1,6 @@
 # Styling Guide
 
-`@kairosstack/ui` supports multiple styling strategies so consumers can adopt it incrementally.
+`@myai-tech/myui` supports multiple styling strategies so consumers can adopt it incrementally.
 
 ## Modes
 
@@ -9,7 +9,7 @@
 Use this when you want the library defaults:
 
 ```tsx
-import "@kairosstack/ui/styles.css";
+import "@myai-tech/myui/styles.css";
 ```
 
 This path assumes your app has Tailwind v4 tooling available.
@@ -19,7 +19,7 @@ This path assumes your app has Tailwind v4 tooling available.
 Use this when you want shared CSS variables but custom utility/component styles:
 
 ```tsx
-import "@kairosstack/ui/theme.css";
+import "@myai-tech/myui/theme.css";
 ```
 
 ### Fully custom
@@ -36,7 +36,7 @@ Import components only and style entirely in your app or fork.
 
 daisyUI is intentionally not bundled.
 
-You can use daisyUI in the consuming app and combine it with `@kairosstack/ui` by:
+You can use daisyUI in the consuming app and combine it with `@myai-tech/myui` by:
 
 - choosing token values that align with your daisy theme
 - overriding component classes where visual language differs

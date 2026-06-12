@@ -31,10 +31,10 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ### Added
 
-- Initial standalone `@kairosstack/ui` package scaffolding.
+- Initial standalone `@myai-tech/myui` package scaffolding.
 - Shared UI primitive exports and style entrypoints.
 - Documentation baseline for usage and contribution.
-- Kairos app integration guide for `studio` and `core` frontends.
+- myAI app integration guide for `studio` and `core` frontends.
 - CI workflow to validate typecheck and build on push/PR.
 - GitHub-friendly docs hub and numbered walkthrough pages for setup, usage, catalog, theming, adoption, and alpha publishing.
 - Screenshot documentation pathing under `docs/images/` for UI reference in guides.

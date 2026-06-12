@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { MessageInteractionMenu } from "../src";
 
 const meta = {
-  title: "Chat/Message Interaction Menu",
+  title: "Components/Thread Post Menu",
   component: MessageInteractionMenu,
   tags: ["autodocs"],
 } satisfies Meta<typeof MessageInteractionMenu>;
@@ -12,7 +12,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Menu: Story = {
   render: () => {
     const [open, setOpen] = React.useState(false);
     const [position, setPosition] = React.useState({ x: 280, y: 220 });

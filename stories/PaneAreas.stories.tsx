@@ -12,7 +12,7 @@ import { ChatThreadArea } from "../src/components/ChatThreadArea";
 import { paneActionItems, paneDecisions, paneMessages, paneParticipants } from "./paneAreaFixtures";
 
 const meta = {
-  title: "Chat/Pane Areas",
+  title: "Components/Pane Areas",
   component: ChatThreadArea,
   tags: ["autodocs"],
   parameters: { layout: "fullscreen" },

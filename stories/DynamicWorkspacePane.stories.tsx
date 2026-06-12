@@ -2,7 +2,7 @@ import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Calendar, FileSearch, MessageSquareText } from "lucide-react";
 
-import { DynamicMenuSelector, type DynamicWorkspacePaneOption } from "../src";
+import { WindowWorkspaceSelector, type DynamicWorkspacePaneOption } from "../src";
 
 const optionMap: Record<string, DynamicWorkspacePaneOption> = {
   "thread-alex": {
@@ -28,24 +28,24 @@ const optionMap: Record<string, DynamicWorkspacePaneOption> = {
 };
 
 const meta = {
-  title: "Chat/Dynamic Menu Selector",
-  component: DynamicMenuSelector,
+  title: "Components/Pane Areas/Pane Loader",
+  component: WindowWorkspaceSelector,
   tags: ["autodocs"],
   parameters: {
     layout: "fullscreen",
   },
-} satisfies Meta<typeof DynamicMenuSelector>;
+} satisfies Meta<typeof WindowWorkspaceSelector>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const PaneLoader: Story = {
   render: () => {
     const [lastAction, setLastAction] = React.useState("");
 
     return (
       <div className="h-[520px] border border-border rounded-lg overflow-hidden">
-        <DynamicMenuSelector
+        <WindowWorkspaceSelector
           optionMap={optionMap}
           optionKeys={["thread-alex", "audit", "meetings"]}
           onRequestCustomLoad={() => setLastAction("custom-loader")}

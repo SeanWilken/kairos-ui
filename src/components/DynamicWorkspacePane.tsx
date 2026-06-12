@@ -129,3 +129,5 @@ export function DynamicWorkspacePane({
 }
 
 export const DynamicMenuSelector = DynamicWorkspacePane;
+export const WindowWorkspaceSelector = DynamicWorkspacePane;
+export const PaneLoader = DynamicWorkspacePane;

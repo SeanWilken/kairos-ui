@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Bot, X, Maximize2, Minimize2, Settings, RefreshCw, Upload } from "lucide-react";
-import { AssistantProfile } from "../types";
-import { ChatWorkspace, type ChatInputAction, type ChatMessage } from "./ChatWorkspace";
+import { Upload } from "lucide-react";
+import { AssistantProfile, type Message, type Persona } from "../types";
+import { ChatWidget } from "./CompactAssistant";
+import type { TurnCardProps } from "./TurnCard";
 
 interface PersonalAssistantProps {
   isOpen: boolean;
@@ -62,24 +62,6 @@ export function PersonalAssistant({
     },
   ]);
   const [inputValue, setInputValue] = useState("");
-  const [intentionMode, setIntentionMode] = useState("ask");
-  const [responseMode, setResponseMode] = useState("fast");
-
-  const inputActions: ChatInputAction[] = [
-    {
-      id: "focus-group",
-      label: "Focus Group",
-      description: "Spawn a private sub-thread between selected personas.",
-      prefix: "/focus @Architect @SecurityReviewer Goal: ",
-    },
-    {
-      id: "summarize",
-      label: "Summarize",
-      description: "Request summary from recent messages.",
-      prefix: "/summarize last 30 messages",
-    },
-  ];
-
   const handleSendMessage = (content: string) => {
     const trimmed = content.trim();
     if (!trimmed) return;
@@ -106,82 +88,45 @@ export function PersonalAssistant({
     }, 500);
   };
 
-  const workspaceMessages: ChatMessage[] = messages.map((message) => ({
-    id: message.id,
-    role: message.role,
-    content: message.content,
-    timestamp: message.timestamp,
+  const assistantPersona: Persona = {
+    id: assistant.id ?? "assistant",
+    name: assistant.name,
+    role: "Support",
+    description: assistant.role,
+    avatarColor: assistant.avatarColor,
+  };
+
+  const posts: TurnCardProps[] = messages.map((message) => ({
+    message: {
+      id: message.id,
+      role: message.role === "assistant" ? "persona" : "user",
+      personaId: message.role === "assistant" ? assistantPersona.id : undefined,
+      content: message.content,
+      timestamp: message.timestamp,
+    } as Message,
+    persona: message.role === "assistant" ? assistantPersona : null,
   }));
 
   if (!isOpen) return null;
 
-  const Component = isFullscreen ? "div" : motion.div;
-  const containerClass = isFullscreen
-    ? "fixed inset-0 bg-background z-50 flex flex-col"
-    : "fixed bottom-4 left-20 w-96 h-[500px] bg-background border border-border rounded-lg shadow-2xl z-50 flex flex-col";
-
   return (
-    <AnimatePresence>
-      <Component
-        {...(!isFullscreen && {
-          initial: { opacity: 0, y: 20, scale: 0.95 },
-          animate: { opacity: 1, y: 0, scale: 1 },
-          exit: { opacity: 0, y: 20, scale: 0.95 },
-        })}
-        className={containerClass}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white cursor-pointer"
-              style={{ backgroundColor: assistant.avatarColor }}
-            >
-              <Bot className="w-4 h-4" />
-            </div>
-            <div>
-              <button
-                type="button"
-                onClick={onOpenPersonas}
-                className="text-sm hover:underline cursor-pointer"
-              >
-                {assistant.name}
-              </button>
-              <div className="text-xs text-muted-foreground">{assistant.role}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setShowConversations(!showConversations)}
-              className="w-8 h-8 rounded hover:bg-accent flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-              title="Switch conversation"
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="w-8 h-8 rounded hover:bg-accent flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-              title="Settings & Training"
-            >
-              <Settings className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setIsFullscreen(!isFullscreen)}
-              className="w-8 h-8 rounded hover:bg-accent flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            </button>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded hover:bg-accent flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Conversation Switcher */}
-        {showConversations && (
+    <ChatWidget
+      isOpen={isOpen}
+      assistantPersona={assistantPersona}
+      posts={posts}
+      draft={inputValue}
+      showSettingsButton
+      position="bottom-left"
+      isFullscreen={isFullscreen}
+      onRefresh={() => setShowConversations((current) => !current)}
+      onSettingsClick={() => setShowSettings((current) => !current)}
+      onToggleFullscreen={() => setIsFullscreen((current) => !current)}
+      onClose={onClose}
+      onDraftChange={setInputValue}
+      onSendMessage={handleSendMessage}
+      topSlot={(
+        <>
+          {showConversations ? (
           <div className="border-b border-border bg-muted/50">
             <div className="px-4 py-2 text-xs text-muted-foreground">Switch conversation</div>
             <div className="max-h-48 overflow-auto">
@@ -212,10 +157,9 @@ export function PersonalAssistant({
               + New conversation
             </button>
           </div>
-        )}
+          ) : null}
 
-        {/* Settings Panel */}
-        {showSettings && (
+          {showSettings ? (
           <div className="border-b border-border bg-muted/50 p-4">
             <div className="text-xs text-muted-foreground mb-3">Assistant Settings & Training</div>
             <div className="space-y-2">
@@ -250,29 +194,9 @@ export function PersonalAssistant({
               </div>
             </div>
           </div>
-        )}
-
-        <div className="flex-1 min-h-0">
-          <ChatWorkspace
-            compact
-            hideHeader
-            messages={workspaceMessages}
-            draft={inputValue}
-            onDraftChange={setInputValue}
-            onSendMessage={handleSendMessage}
-            placeholder="Ask me anything..."
-            threadVariant="direct"
-            mode={intentionMode}
-            modeOptions={["ask", "decide", "plan", "execute"]}
-            onModeChange={setIntentionMode}
-            responseMode={responseMode}
-            responseModeOptions={["fast", "thinking", "balanced"]}
-            onResponseModeChange={setResponseMode}
-            inputActions={inputActions}
-            defaultControlsExpanded
-          />
-        </div>
-      </Component>
-    </AnimatePresence>
+          ) : null}
+        </>
+      )}
+    />
   );
 }

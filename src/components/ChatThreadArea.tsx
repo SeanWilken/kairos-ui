@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Bot, ChevronDown, Plus, Send, User, WandSparkles } from "lucide-react";
 
+import { ChatMarkdown } from "./ChatMarkdown";
 import { cn } from "./ui/utils";
 
 export type ChatParticipant = {
@@ -81,6 +82,8 @@ export type ChatThreadAreaProps = {
   controlsExpanded?: boolean;
   defaultControlsExpanded?: boolean;
   onControlsExpandedChange?: (expanded: boolean) => void;
+  messageContentFormat?: "text" | "markdown";
+  renderMessageContent?: (message: ChatMessage) => React.ReactNode;
 };
 
 function getSoftAvatarColor(color: string, alpha = 0.16) {
@@ -136,6 +139,8 @@ export function ChatThreadArea({
   controlsExpanded,
   defaultControlsExpanded = false,
   onControlsExpandedChange,
+  messageContentFormat = "text",
+  renderMessageContent,
 }: ChatThreadAreaProps) {
   const [internalDraft, setInternalDraft] = React.useState(defaultDraft);
   const [isModeMenuOpen, setIsModeMenuOpen] = React.useState(false);
@@ -287,7 +292,13 @@ export function ChatThreadArea({
                         {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
                     </div>
-                    <div className={cn("text-foreground", compact ? "text-sm" : "text-sm")}>{message.content}</div>
+                    <div className={cn("text-foreground", compact ? "text-sm" : "text-sm")}>
+                      {renderMessageContent
+                        ? renderMessageContent(message)
+                        : messageContentFormat === "markdown"
+                          ? <ChatMarkdown content={message.content} />
+                          : message.content}
+                    </div>
                     {message.meta ? <div className="mt-1">{message.meta}</div> : null}
                   </div>
                 </div>
@@ -354,7 +365,7 @@ export function ChatThreadArea({
                       <button
                         type="button"
                         onClick={toggleModeMenu}
-                        className="h-9 px-3 rounded-md border border-border bg-background hover:bg-accent transition-colors flex items-center gap-2 text-sm capitalize"
+                        className="h-9 px-3 rounded-md border border-border bg-background hover:bg-accent transition-colors flex items-center gap-2 text-sm whitespace-nowrap"
                       >
                         {mode ?? modeOptions[0]}
                         <ChevronDown className="w-4 h-4" />
@@ -398,7 +409,7 @@ export function ChatThreadArea({
                     <button
                       type="button"
                       onClick={toggleActionMenu}
-                      className="h-9 px-3 rounded-md border border-border bg-background hover:bg-accent transition-colors inline-flex items-center gap-2 text-sm"
+                      className="h-9 px-3 rounded-md border border-border bg-background hover:bg-accent transition-colors inline-flex items-center gap-2 text-sm whitespace-nowrap"
                       title="Insert action template"
                       aria-label="Insert action template"
                     >

@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "motion/react";
+import { createPortal } from "react-dom";
 import { FileText, FileSearch, Download, FileOutput, Target, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -13,7 +14,8 @@ interface LeftSidebarMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectMode: (mode: string) => void;
-  placement?: "app-shell" | "chat";
+  placement?: "app-shell" | "chat" | "workspace";
+  chatOffsetLeft?: number;
   items?: LeftSidebarMenuItem[];
 }
 
@@ -31,35 +33,44 @@ export function LeftSidebarMenu({
   onClose,
   onSelectMode,
   placement = "app-shell",
+  chatOffsetLeft = 256,
   items,
 }: LeftSidebarMenuProps) {
+  const isContainerPlacement = placement === "workspace";
   const isChatPlacement = placement === "chat";
   const menuItems = items ?? defaultMenuItems;
 
-  return (
+  const menu = (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className={isChatPlacement ? "absolute inset-0 bg-black/20 z-10" : "fixed inset-0 bg-black/20 z-40"}
+            className={
+              isContainerPlacement
+                ? "absolute inset-0 bg-black/30 backdrop-blur-[1px] z-[180]"
+                : isChatPlacement
+                  ? "fixed inset-0 z-[180] bg-black/35 backdrop-blur-[1px]"
+                  : "fixed inset-0 bg-black/35 backdrop-blur-[1px] z-[140]"
+            }
           />
 
-          {/* Menu */}
           <motion.div
-            initial={{ x: -280 }}
+            initial={{ x: "-100%" }}
             animate={{ x: 0 }}
-            exit={{ x: -280 }}
+            exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className={
-              isChatPlacement
-                ? "absolute left-0 top-0 bottom-0 w-72 bg-background border-r border-border shadow-xl z-20"
-                : "fixed left-16 top-0 bottom-0 w-72 bg-background border-r border-border shadow-xl z-50"
+              isContainerPlacement
+                ? "absolute left-0 top-0 bottom-0 w-[26rem] max-w-[90vw] bg-background border-r border-border shadow-xl z-[190]"
+                : isChatPlacement
+                  ? "fixed top-0 bottom-0 z-[190] w-[26rem] max-w-[90vw] bg-background border-r border-border shadow-xl"
+                  : "fixed left-16 top-0 bottom-0 w-[26rem] max-w-[90vw] bg-background border-r border-border shadow-xl z-[150]"
             }
+            style={isChatPlacement ? { left: `${chatOffsetLeft}px` } : undefined}
           >
             <div className="flex items-center justify-between px-4 py-4 border-b border-border">
               <h3>Split Modes & Actions</h3>
@@ -99,4 +110,10 @@ export function LeftSidebarMenu({
       )}
     </AnimatePresence>
   );
+
+  if (typeof document !== "undefined" && placement !== "workspace") {
+    return createPortal(menu, document.body);
+  }
+
+  return menu;
 }

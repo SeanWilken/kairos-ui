@@ -528,8 +528,39 @@ export function SplitWorkspace({
 
   if (panes.length === 0) {
     return (
-      <div className={cn("h-full w-full border border-dashed border-border rounded-lg flex items-center justify-center", className)}>
-        {emptyState ?? <p className="text-sm text-muted-foreground">No panes open</p>}
+      <div className={cn("h-full min-h-[32rem] w-full bg-background relative flex flex-col", className)}>
+        {showTopBar ? (
+          <div className="h-14 border-b border-border px-3 flex items-center justify-between gap-3 bg-background">
+            <div className="min-w-0">
+              <h3 className="truncate">{title}</h3>
+              {subtitle ? <p className="truncate text-xs text-muted-foreground">{subtitle}</p> : null}
+            </div>
+            <button
+              type="button"
+              onClick={onAddPaneRequest}
+              disabled={!onAddPaneRequest}
+              className="h-10 w-10 rounded-md border border-border inline-flex items-center justify-center hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+              title={addPaneLabel}
+              aria-label={addPaneLabel}
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
+        ) : null}
+        <div className="flex-1 border border-dashed border-border rounded-lg flex items-center justify-center m-3">
+          <div className="flex flex-col items-center gap-3">
+            {emptyState ?? <p className="text-sm text-muted-foreground">No panes open</p>}
+            <button
+              type="button"
+              onClick={onAddPaneRequest}
+              disabled={!onAddPaneRequest}
+              className="h-9 px-3 rounded-md border border-border text-sm inline-flex items-center gap-2 hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Plus className="w-4 h-4" />
+              {addPaneLabel}
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -543,7 +574,7 @@ export function SplitWorkspace({
           onActionMenuSelect?.(id);
           setIsActionMenuOpen(false);
         }}
-        placement="chat"
+        placement="workspace"
         items={actionMenuItems}
       />
 
@@ -589,6 +620,19 @@ export function SplitWorkspace({
         </div>
 
         <div className="flex items-center gap-2">
+          {showTopBarAddButton ? (
+            <button
+              type="button"
+              onClick={onAddPaneRequest}
+              disabled={!onAddPaneRequest}
+              className="h-10 w-10 rounded-md border border-border inline-flex items-center justify-center hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+              title={addPaneLabel}
+              aria-label={addPaneLabel}
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          ) : null}
+
           {showTopBarActions && layout === "canvas" ? (
             <button
               type="button"
@@ -629,7 +673,7 @@ export function SplitWorkspace({
 
       {showTopBar && showActionBarBelowHeader ? (
         <div className="h-11 border-b border-border px-3 flex items-center gap-1 bg-background overflow-x-auto">
-          <div className="hidden md:flex items-center gap-1">
+          <div className="flex items-center gap-1">
             {loadedSelectionEntries.map((entry) => (
               <button
                 key={`bar-${entry.paneId}-${entry.optionId}`}

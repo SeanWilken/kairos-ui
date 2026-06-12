@@ -1,10 +1,10 @@
-# @kairosstack/ui
+# @myai-tech/myui
 
-Open-source React UI primitives for Kairos apps and external consumers.
+Open-source React UI primitives for myAI apps and external consumers.
 
-`@kairosstack/ui` is a building-block library. It focuses on composition, accessibility, and configurability instead of app-specific workflows.
+`@myai-tech/myui` is a building-block library. It focuses on composition, accessibility, and configurability instead of app-specific workflows.
 
-Package scope is managed under the npm organization `@kairosstack`.
+Package scope is managed under the npm organization `@myai-tech`.
 
 ## Purpose
 
@@ -22,13 +22,13 @@ Package scope is managed under the npm organization `@kairosstack`.
 ## Installation
 
 ```bash
-npm install @kairosstack/ui@alpha
+npm install @myai-tech/myui@alpha
 ```
 
 Or with Bun:
 
 ```bash
-bun add @kairosstack/ui@alpha
+bun add @myai-tech/myui@alpha
 ```
 
 ## Documentation
@@ -39,7 +39,7 @@ bun add @kairosstack/ui@alpha
 - Component usage patterns: `docs/02-usage-patterns.md`
 - Component catalog: `docs/03-component-catalog.md`
 - Theming and overrides: `docs/04-theming-and-overrides.md`
-- Kairos adoption guide: `docs/05-kairos-adoption-guide.md`
+- myAI adoption guide: `docs/05-myai-adoption-guide.md`
 - Wizard templates: `docs/09-wizard-templates.md`
 - Profile builder and cards: `docs/10-profile-builder-and-cards.md`
 - Auth login page: `docs/11-auth-login-page.md`
@@ -65,8 +65,8 @@ When GitHub Pages is enabled for this repository, Storybook is automatically dep
 ## Quick start
 
 ```tsx
-import { Button } from "@kairosstack/ui";
-import "@kairosstack/ui/styles.css";
+import { Button } from "@myai-tech/myui";
+import "@myai-tech/myui/styles.css";
 
 export function Example() {
   return <Button>Save</Button>;
@@ -80,7 +80,7 @@ export function Example() {
 Import once in your app entry:
 
 ```tsx
-import "@kairosstack/ui/styles.css";
+import "@myai-tech/myui/styles.css";
 ```
 
 ### 2) Theme-only tokens
@@ -88,7 +88,7 @@ import "@kairosstack/ui/styles.css";
 If you want your own utility/classes but still want shared token names:
 
 ```tsx
-import "@kairosstack/ui/theme.css";
+import "@myai-tech/myui/theme.css";
 ```
 
 ### 3) No package styles
@@ -98,7 +98,7 @@ Import components only, then style them completely in your app/fork.
 ## Tailwind and daisyUI
 
 - Tailwind is optional at the package level.
-- If you use `@kairosstack/ui/styles.css`, your app should include Tailwind v4 tooling.
+- If you use `@myai-tech/myui/styles.css`, your app should include Tailwind v4 tooling.
 - daisyUI is not a dependency of this package; you can layer daisyUI in your app and override classes/tokens as needed.
 
 See `docs/styling.md` for recommended override patterns.
@@ -109,11 +109,11 @@ See `docs/styling.md` for recommended override patterns.
 - Where internal affordances exist (icons/labels/close controls), prefer prop-based overrides over hardcoded behavior.
 - Domain data mapping should happen in app-layer view-model adapters, not inside this package.
 
-## Kairos app integration
+## myAI app integration
 
-For `kairos-studio` and `kairos-core` frontend adoption, follow:
+For `myai-studio` and `myai-core` frontend adoption, follow:
 
-- `docs/consuming-in-kairos-apps.md`
+- `docs/consuming-in-myai-apps.md`
 - `docs/migration-playbook.md`
 
 ## Contributing
@@ -128,7 +128,7 @@ MIT. See `LICENSE`.
 
 Huge credit to [shadcn/ui](https://ui.shadcn.com/) for the component patterns, accessibility-forward defaults, and template guidance that informed this library's foundation.
 
-Many primitives in this repo are adapted from shadcn/ui examples and conventions, then extended for Kairos-specific packaging and cross-repo consumption.
+Many primitives in this repo are adapted from shadcn/ui examples and conventions, then extended for myAI-specific packaging and cross-repo consumption.
 
 shadcn/ui is licensed under MIT and can be found here:
 

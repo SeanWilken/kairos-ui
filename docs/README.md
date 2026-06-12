@@ -1,14 +1,14 @@
-# Kairos UI Docs
+# myAI UI Docs
 
-This is the documentation hub for `@kairosstack/ui`.
+This is the documentation hub for `@myai-tech/myui`.
 
-`@kairosstack/ui` is currently published and consumed as an alpha package. The rollout path is:
+`@myai-tech/myui` is currently published and consumed as an alpha package. The rollout path is:
 
 1. Push and validate on GitHub
 2. Publish alpha builds to npm
 3. Consume from `studio` and `core` using normal package installation
 
-Publishing scope for this library is `@kairosstack`.
+Publishing scope for this library is `@myai-tech`.
 
 ## Start here
 
@@ -17,13 +17,14 @@ Publishing scope for this library is `@kairosstack`.
 - [02 - Usage Patterns](./02-usage-patterns.md)
 - [03 - Component Catalog](./03-component-catalog.md)
 - [04 - Theming and Overrides](./04-theming-and-overrides.md)
-- [05 - Kairos Adoption Guide](./05-kairos-adoption-guide.md)
+- [05 - myAI Adoption Guide](./05-myai-adoption-guide.md)
 - [06 - Release and Publishing (alpha)](./06-release-and-publishing.md)
 - [07 - Contributing Components](./07-contributing-components.md)
 - [08 - Studio Screen Map](./08-studio-screen-map.md)
 - [09 - Wizard Templates](./09-wizard-templates.md)
 - [10 - Profile Builder and Cards](./10-profile-builder-and-cards.md)
 - [11 - Auth Login Page](./11-auth-login-page.md)
+- [12 - Document Viewers and Thread Blocks](./12-document-viewers-and-thread-blocks.md)
 
 ## Interactive docs deployment
 

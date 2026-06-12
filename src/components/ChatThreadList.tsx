@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Archive, Bot, Pin, Search, User, Users } from "lucide-react";
+import { Archive, Bot, PanelLeftClose, Pin, Search, User, Users } from "lucide-react";
 
 import { cn } from "./ui/utils";
 
@@ -38,6 +38,11 @@ export type ChatThreadListProps = {
   onSearchQueryChange?: (query: string) => void;
   showSearch?: boolean;
   showFilters?: boolean;
+  collapsible?: boolean;
+  collapsed?: boolean;
+  defaultCollapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
+  collapseOnSelect?: boolean;
 };
 
 export function ChatThreadList({
@@ -54,12 +59,20 @@ export function ChatThreadList({
   onSearchQueryChange,
   showSearch = true,
   showFilters = true,
+  collapsible = false,
+  collapsed,
+  defaultCollapsed = false,
+  onCollapsedChange,
+  collapseOnSelect = false,
 }: ChatThreadListProps) {
   const [internalFilter, setInternalFilter] = React.useState<ChatThreadFilter>("all");
   const [internalSearchQuery, setInternalSearchQuery] = React.useState("");
+  const [internalCollapsed, setInternalCollapsed] = React.useState(defaultCollapsed);
 
   const activeFilter = filter ?? internalFilter;
   const activeSearchQuery = searchQuery ?? internalSearchQuery;
+  const isCollapsed = collapsed ?? internalCollapsed;
+  const TOP_HEADER_HEIGHT = 68;
 
   const participantsById = React.useMemo(
     () => new Map(participants.map((participant) => [participant.id, participant])),
@@ -80,6 +93,13 @@ export function ChatThreadList({
     onSearchQueryChange?.(nextSearch);
   };
 
+  const setCollapsed = (nextCollapsed: boolean) => {
+    if (collapsed === undefined) {
+      setInternalCollapsed(nextCollapsed);
+    }
+    onCollapsedChange?.(nextCollapsed);
+  };
+
   const filteredThreads = threads
     .filter((thread) => {
       if (activeFilter === "rooms") return thread.type === "room";
@@ -94,71 +114,95 @@ export function ChatThreadList({
       return b.lastMessageTime.getTime() - a.lastMessageTime.getTime();
     });
 
+  if (collapsible && isCollapsed) {
+    return ( null );
+  }
+
   return (
     <div className={cn("w-96 border-r border-border flex flex-col bg-background min-h-0", className)}>
-      <div className="px-4 py-4 border-b border-border">
-        <h2 className="mb-1">{title}</h2>
-        <p className="text-sm text-muted-foreground mb-4">{description}</p>
-
-        {showSearch ? (
-          <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={activeSearchQuery}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search conversations..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
-            />
+      <div className="">
+        <div className="flex">
+          {collapsible ? (
+            <div className="mb-3 pr-2 flex items-center justify-end">
+              <button
+                  type="button"
+                  onClick={() => setCollapsed(true)}
+                  className="h-full w-12 border-l border-border text-muted-foreground hover:bg-accent inline-flex items-center justify-center"
+                  title="Collapse thread list"
+                >
+                  <PanelLeftClose className="w-4 h-4" />
+              </button>
+            </div>
+          ) : null}
+          <div className={collapsible ? "" : "pl-4"}>
+            <h2 className="mb-1">{title}</h2>
+            <p className="text-sm text-muted-foreground mb-4">{description}</p>
           </div>
-        ) : null}
+        </div>
+        
+        <div className="px-4 py-4">
 
-        {showFilters ? (
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setFilter("all")}
-              className={cn(
-                "px-3 py-1.5 rounded text-xs transition-colors",
-                activeFilter === "all" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent",
-              )}
-            >
-              All
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter("rooms")}
-              className={cn(
-                "px-3 py-1.5 rounded text-xs transition-colors",
-                activeFilter === "rooms" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent",
-              )}
-            >
-              Rooms
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter("direct")}
-              className={cn(
-                "px-3 py-1.5 rounded text-xs transition-colors",
-                activeFilter === "direct" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent",
-              )}
-            >
-              Direct
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter("archived")}
-              className={cn(
-                "px-3 py-1.5 rounded text-xs transition-colors",
-                activeFilter === "archived" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent",
-              )}
-              aria-label="Archived"
-              title="Archived"
-            >
-              <Archive className="w-3 h-3" />
-            </button>
-          </div>
-        ) : null}
+          {showSearch ? (
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                value={activeSearchQuery}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search conversations..."
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+              />
+            </div>
+          ) : null}
+
+          {showFilters ? (
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setFilter("all")}
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs transition-colors",
+                  activeFilter === "all" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent",
+                )}
+              >
+                All
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilter("rooms")}
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs transition-colors",
+                  activeFilter === "rooms" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent",
+                )}
+              >
+                Rooms
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilter("direct")}
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs transition-colors",
+                  activeFilter === "direct" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent",
+                )}
+              >
+                Direct
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilter("archived")}
+                className={cn(
+                  "px-3 py-1.5 rounded text-xs transition-colors",
+                  activeFilter === "archived" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent",
+                )}
+                aria-label="Archived"
+                title="Archived"
+              >
+                <Archive className="w-3 h-3" />
+              </button>
+            </div>
+          ) : null}
+        </div>
+
       </div>
 
       <div className="flex-1 overflow-auto">
@@ -173,7 +217,12 @@ export function ChatThreadList({
             <button
               key={thread.id}
               type="button"
-              onClick={() => onSelectThread?.(thread)}
+              onClick={() => {
+                onSelectThread?.(thread);
+                if (collapsible && collapseOnSelect) {
+                  setCollapsed(true);
+                }
+              }}
               className={cn(
                 "w-full text-left flex items-start gap-3 px-4 py-3 border-b border-border/50 transition-colors",
                 selected ? "bg-accent" : "hover:bg-accent",

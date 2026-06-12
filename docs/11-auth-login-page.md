@@ -1,20 +1,20 @@
 # 11 - Studio Login Page
 
-`StudioLogin` is the canonical shared login surface for Kairos frontends.
+`StudioLogin` is the canonical shared login surface for myAI frontends.
 
 It preserves the Studio login visual language while keeping auth wiring in each consuming app.
 
 ## Export
 
 ```tsx
-import { AuthLoginPage } from "@kairosstack/ui";
-import type { LoginFormPayload } from "@kairosstack/ui";
+import { AuthLoginPage } from "@myai-tech/myui";
+import type { LoginFormPayload } from "@myai-tech/myui";
 ```
 
 Primary shared component:
 
 ```tsx
-import { StudioLogin } from "@kairosstack/ui";
+import { StudioLogin } from "@myai-tech/myui";
 ```
 
 ## Why this component exists
@@ -30,7 +30,7 @@ import { StudioLogin } from "@kairosstack/ui";
 Use `StudioLogin` directly when you want app-controlled field state.
 
 ```tsx
-import { StudioLogin } from "@kairosstack/ui";
+import { StudioLogin } from "@myai-tech/myui";
 
 export function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -38,7 +38,7 @@ export function LoginScreen() {
 
   return (
     <StudioLogin
-      appName="Kairos"
+      appName="myAI"
       welcomeTitle="Council"
       welcomeDescription="Coordinate councils with AI and human context."
       formTitle="Welcome back"
@@ -61,12 +61,12 @@ export function LoginScreen() {
 Use `AuthLoginPage` when you want the component to own local email/password/loading/error behavior.
 
 ```tsx
-import { AuthLoginPage } from "@kairosstack/ui";
+import { AuthLoginPage } from "@myai-tech/myui";
 
 export function LoginScreen() {
   return (
     <AuthLoginPage
-      appTitle="Kairos"
+      appTitle="myAI"
       heroTitle="Studio"
       welcomeDescription="Sign in to access your workspace"
       onSubmit={async ({ email, password, rememberMe }) => {

@@ -1,3 +1,5 @@
+import type { DocumentDescriptor } from "./documents";
+
 export type PersonaRole =
   | "PM"
   | "Senior Dev"
@@ -189,3 +191,36 @@ export type ProfileDraft = {
   guidelines: ProfileGuidelines;
   contact: ProfileContact;
 };
+
+export interface KnowledgeNode {
+  id: string;
+  type: 'raw' | 'cluster' | 'question' | 'decision' | 'backburner' | 'central' | 'knowledge';
+  content: string;
+  title?: string;
+  position: { x: number; y: number };
+  tags?: string[];
+  children?: string[];
+  relationships?: { targetId: string; label: string; kind?: string; weight?: number }[];
+  relatedDocuments?: DocumentDescriptor[];
+  metadata?: {
+    sensitivity?: string;
+    owner?: string;
+    sourceType?: string;
+    accessLevel?: string;
+    lastUpdated?: string;
+    aiRelevance?: string;
+    entityKind?: string;
+    entityId?: string;
+    visibilityScope?: string;
+    aclPolicyId?: string;
+    orgId?: string;
+    teamId?: string;
+    groupId?: string;
+    sourceSystem?: string;
+    sourceRef?: string;
+    confidence?: number;
+    verificationState?: string;
+    tags?: string[];
+    documentCount?: number;
+  };
+}

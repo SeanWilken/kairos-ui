@@ -35,9 +35,9 @@ export type LoginProps = {
 
 export function Login(props: LoginProps) {
   const {
-    appName = "Studio",
-    welcomeTitle = "Studio",
-    welcomeDescription = "Manage users, workspaces, and AI resources all in one place. Get started by signing in to your account.",
+    appName = "myAI",
+    welcomeTitle = "myAI",
+    welcomeDescription = "AI resources all in one place. Get started by signing in to your account.",
     formTitle = "Welcome back",
     formDescription = "Sign in to continue",
     email,

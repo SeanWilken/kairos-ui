@@ -2,145 +2,42 @@ import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ArrowLeftRight, LayoutGrid, Menu, PanelRightClose, PanelRightDashed, Save } from "lucide-react";
 
-import { ActionItemRow, ChatWorkspace, DecisionCard, LeftSidebarMenu, SplitWorkspace, type SplitWorkspacePane } from "../src";
+import { ActionItemRow, ChatWorkspace, DecisionCard, LeftSidebarMenu, SplitWorkspace, type SplitWorkspacePane, WindowWorkspace } from "../src";
 import { createPaneLoadRegistry, paneActionItems, paneDecisions, paneLoadOptionKeys, paneMessages, paneParticipants } from "./paneAreaFixtures";
 
 const meta = {
-  title: "Chat/Split Workspace",
+  title: "Workspaces/Split Workspace",
   component: SplitWorkspace,
   tags: ["autodocs"],
+  argTypes: {
+    layout: { control: "radio", options: ["canvas", "split"], description: "Workspace arrangement mode." },
+    gridOrientation: { control: "radio", options: ["row", "column"], description: "Auto-grid orientation for canvas panes." },
+    showTopBar: { control: "boolean", description: "Show workspace header bar." },
+    showTopBarActions: { control: "boolean", description: "Show save/rearrange action controls." },
+    showTopBarAddButton: { control: "boolean", description: "Show + button in top action bar." },
+    addPaneLabel: { control: "text", description: "Accessible label for add-pane controls." },
+  },
+  args: {
+    layout: "canvas",
+    gridOrientation: "row",
+    showTopBar: true,
+    showTopBarActions: true,
+    showTopBarAddButton: true,
+    addPaneLabel: "Add window",
+  },
   parameters: {
     layout: "fullscreen",
+    docs: {
+      description: {
+        component:
+          "Lower-level pane orchestration primitive behind Window Workspace. Use this directly when you need full control over pane rendering, load options, and drag/resize behavior.",
+      },
+    },
   },
 } satisfies Meta<typeof SplitWorkspace>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-
-function SplitWorkspaceDemo() {
-  const [lastPaneAction, setLastPaneAction] = React.useState("");
-  const [nextPaneNumber, setNextPaneNumber] = React.useState(4);
-  const [workspaceId, setWorkspaceId] = React.useState("messages-sprint");
-  const [panes, setPanes] = React.useState<SplitWorkspacePane[]>([
-      {
-        id: "chat",
-        title: "Chat",
-        description: "Primary conversation",
-        defaultSize: 45,
-        minSize: 25,
-        menuActions: [
-          { id: "mute", label: "Mute conversation" },
-          { id: "pin", label: "Pin pane" },
-          { id: "archive", label: "Archive" },
-        ],
-        groupId: "thread-alex",
-        loadOptionKeys: paneLoadOptionKeys,
-      },
-    {
-      id: "docs",
-      title: "Documents",
-      description: "Source material",
-      defaultSize: 35,
-      minSize: 20,
-      canClose: true,
-        menuActions: [
-          { id: "open-source", label: "Open source" },
-          { id: "new-tab", label: "Open in new tab" },
-        ],
-        groupId: "thread-alex",
-        loadOptionKeys: paneLoadOptionKeys,
-      },
-    {
-      id: "audit",
-      title: "Audit Review",
-      description: "Reasoning details",
-      defaultSize: 20,
-      minSize: 20,
-      canClose: true,
-        menuActions: [
-          { id: "rerun", label: "Rerun audit" },
-          { id: "export", label: "Export details" },
-        ],
-        groupId: "thread-alex",
-        loadOptionKeys: paneLoadOptionKeys,
-      },
-    ]);
-
-  return (
-    <div className="h-[100dvh] p-4 bg-muted/20">
-      {lastPaneAction ? (
-        <div className="mb-2 text-xs text-muted-foreground">Last pane action: {lastPaneAction}</div>
-      ) : null}
-
-      <SplitWorkspace
-        className="h-full"
-        layout="canvas"
-        showAddPaneButton
-        title="Thread Workspace + Widgets"
-        subtitle="Dynamic multi-pane canvas"
-        workspaceOptions={[
-          {
-            label: "Messages",
-            options: [
-              { id: "messages-sprint", label: "Sprint Planning" },
-              { id: "messages-release", label: "Release Notes" },
-            ],
-          },
-          {
-            label: "Meetings",
-            options: [
-              { id: "meetings-weekly", label: "Weekly Review" },
-              { id: "meetings-retro", label: "Retrospective" },
-            ],
-          },
-        ]}
-        selectedWorkspaceId={workspaceId}
-        onWorkspaceChange={setWorkspaceId}
-        defaultLoadOptions={
-          []
-        }
-        workspaceContext={{ participantsCount: paneParticipants.length, participants: paneParticipants }}
-        loadOptionRegistry={createPaneLoadRegistry()}
-        panes={panes}
-        handleWithGrip
-        onPaneActionSelect={(paneId, actionId) => {
-          setLastPaneAction(`${paneId}:${actionId}`);
-        }}
-        onPaneLoadOptionSelect={(paneId, optionId) => setLastPaneAction(`${paneId}:${optionId}`)}
-        onPaneLoadRequest={(paneId) => {
-          setLastPaneAction(`${paneId}:load-content`);
-        }}
-        onAddPaneRequest={() => {
-          const newId = `pane-${nextPaneNumber}`;
-          setNextPaneNumber((current) => current + 1);
-          setPanes((current) => [
-            ...current,
-            {
-              id: newId,
-              title: `Pane ${nextPaneNumber}`,
-              loadedLabel: `Pane ${nextPaneNumber}`,
-              loadOptionKeys: paneLoadOptionKeys,
-              canClose: true,
-              menuActions: [
-                { id: "detach", label: "Detach" },
-                { id: "duplicate", label: "Duplicate" },
-              ],
-            },
-          ]);
-        }}
-        onSaveLayout={() => setLastPaneAction("layout:saved")}
-        onPaneClose={(paneId) => {
-          if (paneId === "chat") return;
-          setPanes((current) => current.filter((pane) => pane.id !== paneId));
-        }}
-      />
-    </div>
-  );
-}
-
-export const DynamicPanes: Story = {
-  render: () => <SplitWorkspaceDemo />,
-};
 
 function WorkspaceWithWidgetsDemo() {
   const [messages, setMessages] = React.useState(paneMessages);
@@ -260,14 +157,8 @@ function WorkspaceWithWidgetsDemo() {
 
   const widgetHalf = (
     <div className="h-full min-h-0 bg-background">
-      <SplitWorkspace
+      <WindowWorkspace
         className="h-full"
-        layout="canvas"
-        showTopBar
-        showTopBarActions
-        showTopBarMenuButton={false}
-        showActionBarBelowHeader
-        showTopBarAddButton
         title="Widget Workspace"
         subtitle="Dynamic support panes"
         workspaceOptions={[
@@ -339,6 +230,67 @@ function WorkspaceWithWidgetsDemo() {
   );
 }
 
-export const WorkspaceWithWidgets: Story = {
+export const ThreadPlusWindowWorkspace: Story = {
   render: () => <WorkspaceWithWidgetsDemo />,
+};
+
+function WorkspaceInitializerDemo() {
+  const [template, setTemplate] = React.useState("thread-workspace");
+  const [workspaceName, setWorkspaceName] = React.useState("Sprint Planning");
+  const [initialized, setInitialized] = React.useState(false);
+
+  if (!initialized) {
+    return (
+      <div className="h-[100dvh] p-6 bg-muted/20 flex items-center justify-center">
+        <div className="w-full max-w-xl rounded-xl border border-border bg-background p-5 space-y-4">
+          <div>
+            <h3>Initialize Split Workspace</h3>
+            <p className="text-sm text-muted-foreground">Choose main workspace content and save the workspace definition.</p>
+          </div>
+          <label className="block text-sm space-y-1">
+            <span>Main content template</span>
+            <select
+              value={template}
+              onChange={(event) => setTemplate(event.target.value)}
+              className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+            >
+              <option value="thread-workspace">Thread Workspace</option>
+              <option value="support-workspace">Support Workspace</option>
+            </select>
+          </label>
+          <label className="block text-sm space-y-1">
+            <span>Workspace name</span>
+            <input
+              value={workspaceName}
+              onChange={(event) => setWorkspaceName(event.target.value)}
+              className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+              placeholder="Enter workspace name"
+            />
+          </label>
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setInitialized(true)}
+              className="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm"
+            >
+              Save and open workspace
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-[100dvh]">
+      <WorkspaceWithWidgetsDemo />
+      <div className="absolute top-3 left-1/2 -translate-x-1/2 rounded-md border border-border bg-background px-3 py-1.5 text-xs text-muted-foreground">
+        {template === "thread-workspace" ? "Thread Workspace" : "Support Workspace"} • {workspaceName}
+      </div>
+    </div>
+  );
+}
+
+export const InitializedSplitWorkspace: Story = {
+  render: () => <WorkspaceInitializerDemo />,
 };

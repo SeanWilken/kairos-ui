@@ -1,6 +1,6 @@
 # 07 - Contributing Components
 
-Contributions follow shadcn/ui-inspired conventions with Kairos boundary rules.
+Contributions follow shadcn/ui-inspired conventions with myAI boundary rules.
 
 ## Core expectations
 
@@ -14,7 +14,7 @@ Contributions follow shadcn/ui-inspired conventions with Kairos boundary rules.
 ## Required boundaries
 
 - No app-specific business logic in shared primitives.
-- No imports from `kairos-core`, `kairos-studio`, or app repos.
+- No imports from `myai-core`, `myai-studio`, or app repos.
 - Keep data mapping in the consuming app layer.
 - Tailwind/daisyUI integration must remain optional (no hard dependency in primitive behavior).
 

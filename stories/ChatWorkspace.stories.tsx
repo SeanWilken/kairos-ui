@@ -28,7 +28,7 @@ const starterMessages: ChatMessage[] = [
     id: "m-2",
     role: "participant",
     participantId: "pm-1",
-    content: "Yes, if we keep it to upload + validation.",
+    content: "## Recommendation\nYes, if we keep it to upload + validation.",
     timestamp: new Date("2026-04-26T09:03:00"),
     meta: <span className="text-xs text-muted-foreground">Confidence: 88%</span>,
   },
@@ -36,7 +36,7 @@ const starterMessages: ChatMessage[] = [
     id: "m-3",
     role: "participant",
     participantId: "qa-1",
-    content: "Let's gate rollout and monitor telemetry for 48 hours.",
+    content: "### Rollout safeguards\n\nLet's gate rollout and monitor telemetry for 48 hours.\n\n- Start at **20%** of orgs\n- Watch retry failure rate\n- Publish rollback checklist",
     timestamp: new Date("2026-04-26T09:05:00"),
     meta: <span className="text-xs text-muted-foreground">Confidence: 86%</span>,
   },
@@ -67,11 +67,43 @@ const decisions: Decision[] = [
 ];
 
 const meta = {
-  title: "Chat/Thread Workspace",
+  title: "Workspaces/Thread Workspace",
   component: ChatWorkspace,
   tags: ["autodocs"],
+  args: {
+    title: "Sprint Planning Message Center",
+    subtitle: "Message center",
+    compact: false,
+    hideHeader: false,
+    placeholder: "Send a message...",
+    sendLabel: "Send",
+    rightPanelOpen: true,
+    showActionMenuButton: true,
+    chatMenuOffsetLeft: 0,
+    messageContentFormat: "markdown",
+  },
+  argTypes: {
+    title: { control: "text", description: "Header title for the thread workspace." },
+    subtitle: { control: "text", description: "Optional header subtitle." },
+    compact: { control: "boolean", description: "Compact assistant-style density." },
+    hideHeader: { control: "boolean", description: "Hides the top workspace header." },
+    mode: { control: "text", description: "Current conversation mode value." },
+    responseMode: { control: "text", description: "Current response speed/depth mode." },
+    placeholder: { control: "text", description: "Composer placeholder text." },
+    sendLabel: { control: "text", description: "Accessible label for send action." },
+    rightPanelOpen: { control: "boolean", description: "Controls right panel visibility when provided." },
+    showActionMenuButton: { control: "boolean", description: "Shows left action menu trigger in header." },
+    chatMenuOffsetLeft: { control: "number", description: "Left offset in px used by chat placement menu panel." },
+    messageContentFormat: { control: "radio", options: ["text", "markdown"], description: "How thread message content is rendered." },
+  },
   parameters: {
     layout: "fullscreen",
+    docs: {
+      description: {
+        component:
+          "Primary thread workspace for Council Messages. Use this as the page-level shell for personas, message timeline, composer, command actions, and optional right-side context panes.",
+      },
+    },
   },
 } satisfies Meta<typeof ChatWorkspace>;
 
@@ -94,6 +126,7 @@ function WorkspaceStory() {
         subtitle="Message center"
         participants={participants}
         messages={messages}
+        messageContentFormat="markdown"
         mode={mode}
         modeOptions={["ask", "debate", "decide", "plan", "execute"]}
         onModeChange={setMode}
@@ -203,66 +236,6 @@ function WorkspaceStory() {
   );
 }
 
-export const Default: Story = {
+export const Workspace: Story = {
   render: () => <WorkspaceStory />,
-};
-
-export const CompactAssistantMode: Story = {
-  render: () => {
-    const [messages, setMessages] = React.useState<ChatMessage[]>([
-      {
-        id: "assistant-1",
-        role: "assistant",
-        content: "Hi! I can help with meeting notes or planning.",
-        timestamp: new Date(),
-      },
-    ]);
-    const [mode, setMode] = React.useState("ask");
-    const [responseMode, setResponseMode] = React.useState("fast");
-
-    return (
-      <div className="h-[520px] w-[380px] border border-border rounded-lg overflow-hidden">
-        <ChatWorkspace
-          compact
-          hideHeader
-          threadVariant="direct"
-          mode={mode}
-          modeOptions={["ask", "decide", "plan", "execute"]}
-          onModeChange={setMode}
-          responseMode={responseMode}
-          responseModeOptions={["fast", "thinking", "balanced"]}
-          onResponseModeChange={setResponseMode}
-          inputActions={[
-            {
-              id: "focus-group",
-              label: "Focus Group",
-              description: "Delegate to a small persona working group.",
-              prefix: "/focus @Architect @Analyst Goal: ",
-            },
-          ]}
-          messages={messages}
-          commandSpecMap={{
-            "/focus": {
-              key: "/focus",
-              label: "/focus",
-              menuLabel: "Focus Group",
-              prefix: "/focus ",
-              tokens: [
-                { key: "mentions", label: "mentions", kind: "mentions", suggestions: ["@Architect", "@Analyst"] },
-                { key: "task", label: "task", kind: "task", suggestions: ["Summarize blockers"] },
-                { key: "context", label: "context", kind: "context", suggestions: ["Current thread"] },
-              ],
-            },
-          }}
-          onSendMessage={(value) => {
-            setMessages((current) => [
-              ...current,
-              { id: `u-${Date.now()}`, role: "user", content: value, timestamp: new Date() },
-            ]);
-          }}
-          placeholder="Ask me anything..."
-        />
-      </div>
-    );
-  },
 };

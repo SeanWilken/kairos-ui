@@ -1,5 +1,8 @@
+import * as React from "react";
 import { Message, Persona } from "../types";
 import { User, Sparkles } from "lucide-react";
+
+import { ChatMarkdown } from "./ChatMarkdown";
 
 function getSoftAvatarColor(color: string, alpha = 0.16) {
   const normalized = color.replace("#", "");
@@ -21,11 +24,13 @@ function getSoftAvatarColor(color: string, alpha = 0.16) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-interface TurnCardProps {
+export interface TurnCardProps {
   message: Message;
   persona?: Persona | null;
   resolvePersona?: (personaId: string) => Persona | null | undefined;
   userLabel?: string;
+  contentFormat?: "text" | "markdown";
+  renderMessageContent?: (message: Message) => React.ReactNode;
 }
 
 export function TurnCard({
@@ -33,6 +38,8 @@ export function TurnCard({
   persona,
   resolvePersona,
   userLabel = "You",
+  contentFormat = "text",
+  renderMessageContent,
 }: TurnCardProps) {
   const resolvedPersona =
     persona ?? (message.personaId && resolvePersona ? resolvePersona(message.personaId) : null);
@@ -84,7 +91,11 @@ export function TurnCard({
 
         {/* Message Content */}
         <div className="text-sm text-foreground leading-relaxed">
-          {message.content}
+          {renderMessageContent
+            ? renderMessageContent(message)
+            : contentFormat === "markdown"
+              ? <ChatMarkdown content={message.content} />
+              : message.content}
         </div>
 
         {/* Footer - Confidence & Citations */}
@@ -113,3 +124,5 @@ export function TurnCard({
     </div>
   );
 }
+
+export const ThreadPostCard = TurnCard;

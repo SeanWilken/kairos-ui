@@ -32,7 +32,7 @@ export type AuthLoginPageProps = {
 };
 
 function AuthLoginPage({
-  appTitle = "Kairos",
+  appTitle = "myAI",
   heroTitle = "Studio",
   heroDescription = "Manage users, workspaces, and AI resources all in one place. Get started by signing in.",
   welcomeTitle = "Welcome back",

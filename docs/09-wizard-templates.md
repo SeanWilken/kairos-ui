@@ -1,6 +1,6 @@
 # 09 - Wizard Templates
 
-`WizardTemplate` is a domain-neutral scaffold for setup and onboarding workflows across Kairos apps.
+`WizardTemplate` is a domain-neutral scaffold for setup and onboarding workflows across myAI apps.
 
 Also exported presets:
 
@@ -55,7 +55,7 @@ Those stay in app-layer adapters.
 ## Core setup example
 
 ```tsx
-import { SetupWizardTemplate } from "@kairosstack/ui";
+import { SetupWizardTemplate } from "@myai-tech/myui";
 
 const steps = {
   runtime: { label: "Runtime", description: "Modes and connections" },
@@ -106,7 +106,7 @@ Each flow can use a thin adapter around the same shared wizard shell.
 
 ## Studio API proposal alignment
 
-From `kairos-core/docs/architecture/onboarding-contracts-and-api-draft-v0.2.md`, the following feature groups map directly to wizard templates:
+From `myai-core/docs/architecture/onboarding-contracts-and-api-draft-v0.2.md`, the following feature groups map directly to wizard templates:
 
 - Organization setup (`/v1/studio/organizations`)
 - Persona management (`/v1/studio/personas`)

@@ -43,21 +43,45 @@ const threads: ChatThreadItem[] = [
 ];
 
 const meta = {
-  title: "Chat/Thread List",
+  title: "Components/Thread List",
   component: ChatThreadList,
   tags: ["autodocs"],
+  args: {
+    title: "Messages",
+    description: "Browse rooms and direct conversations",
+    showSearch: true,
+    showFilters: true,
+    collapsible: true,
+    collapseOnSelect: true,
+  },
+  argTypes: {
+    title: { control: "text", description: "Header title for the thread list." },
+    description: { control: "text", description: "Header helper text under the title." },
+    selectedThreadId: { control: "text", description: "Currently selected thread id." },
+    showSearch: { control: "boolean", description: "Show/hide search input." },
+    showFilters: { control: "boolean", description: "Show/hide filter chips." },
+    collapsible: { control: "boolean", description: "Enable collapse controls for sidebar usage." },
+    collapseOnSelect: { control: "boolean", description: "Collapse list immediately after selecting a thread." },
+  },
   parameters: {
     layout: "fullscreen",
+    docs: {
+      description: {
+        component:
+          "Thread list used by Council Messages page. Supports controlled filter/search/collapse state and room/direct/assistant thread variants.",
+      },
+    },
   },
 } satisfies Meta<typeof ChatThreadList>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Playground: Story = {
   render: () => (
-    <div className="h-[100dvh]">
+    <div className="h-[100dvh] min-h-[100dvh]">
       <ChatThreadList
+        className="h-full"
         threads={threads}
         participants={participants}
         selectedThreadId="room-1"

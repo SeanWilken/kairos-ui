@@ -16,14 +16,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 function LoginPlayground() {
-  const [email, setEmail] = React.useState("admin@kairosstack.dev");
+  const [email, setEmail] = React.useState("admin@myai-tech.dev");
   const [password, setPassword] = React.useState("");
   const [rememberMe, setRememberMe] = React.useState(false);
   const [error, setError] = React.useState("");
 
   return (
     <Login
-      appName="Kairos Studio"
+      appName="myAI Studio"
       email={email}
       password={password}
       rememberMe={rememberMe}

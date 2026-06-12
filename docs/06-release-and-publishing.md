@@ -2,7 +2,7 @@
 
 This project is currently released in alpha while integrations are refined.
 
-Package name and scope: `@kairosstack/ui` under npm organization `@kairosstack`.
+Package name and scope: `@myai-tech/myui` under npm organization `@myai-tech`.
 
 ## Release sequence
 
@@ -28,7 +28,7 @@ npm publish --tag alpha --access public
 ## Consumer install (alpha)
 
 ```bash
-bun add @kairosstack/ui@alpha
+bun add @myai-tech/myui@alpha
 ```
 
 ## Before publishing

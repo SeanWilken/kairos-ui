@@ -1,6 +1,6 @@
 # 10 - Profile Builder and Cards
 
-`@kairosstack/ui` includes a reusable profile builder system for:
+`@myai-tech/myui` includes a reusable profile builder system for:
 
 - AI persona configuration
 - human profile (resume-style) configuration
@@ -17,7 +17,7 @@ import {
   ProfileResumeCard,
   ProfileCard,
   ProfileCardGrid,
-} from "@kairosstack/ui";
+} from "@myai-tech/myui";
 
 import type {
   ProfileDraft,
@@ -27,7 +27,7 @@ import type {
   ProfileSkillGroup,
   ProfileToolGroup,
   ProfileModelOption,
-} from "@kairosstack/ui";
+} from "@myai-tech/myui";
 ```
 
 ## Core goals
@@ -39,8 +39,8 @@ import type {
 ## Minimal wizard usage
 
 ```tsx
-import { ProfileBuilderWizard } from "@kairosstack/ui";
-import type { ProfileDraft } from "@kairosstack/ui";
+import { ProfileBuilderWizard } from "@myai-tech/myui";
+import type { ProfileDraft } from "@myai-tech/myui";
 
 export function PersonaBuilderPage() {
   return (
@@ -81,7 +81,7 @@ When you want users to choose persona vs human first:
 Use `ProfileCard` and `ProfileCardGrid` with the same `ProfileDraft` shape.
 
 ```tsx
-import { ProfileCardGrid } from "@kairosstack/ui";
+import { ProfileCardGrid } from "@myai-tech/myui";
 
 <ProfileCardGrid
   profiles={profiles}
@@ -94,7 +94,7 @@ import { ProfileCardGrid } from "@kairosstack/ui";
 ## Resume-style profile preview
 
 ```tsx
-import { ProfileResumeCard } from "@kairosstack/ui";
+import { ProfileResumeCard } from "@myai-tech/myui";
 
 <ProfileResumeCard profile={profile} />;
 ```

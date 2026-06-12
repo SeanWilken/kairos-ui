@@ -1,6 +1,6 @@
 # Purpose and Scope
 
-`@kairosstack/ui` exists to provide reusable UI building blocks that can be shared across Kairos apps and external projects.
+`@myai-tech/myui` exists to provide reusable UI building blocks that can be shared across myAI apps and external projects.
 
 ## In scope
 
@@ -18,6 +18,6 @@
 
 ## Boundary model
 
-- `kairos-core` remains source of domain/runtime truth.
+- `myai-core` remains source of domain/runtime truth.
 - Product repos map domain data to view-model props.
-- `@kairosstack/ui` renders those props without importing domain contracts.
+- `@myai-tech/myui` renders those props without importing domain contracts.

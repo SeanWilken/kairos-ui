@@ -5,7 +5,7 @@ Use these patterns to keep components generic and app-ready.
 ## Pass data through props
 
 ```tsx
-import { Badge, Card, CardContent, CardHeader, CardTitle } from "@kairosstack/ui";
+import { Badge, Card, CardContent, CardHeader, CardTitle } from "@myai-tech/myui";
 
 type ServiceStatus = {
   name: string;
@@ -31,7 +31,7 @@ export function StatusCard({ status }: { status: ServiceStatus }) {
 ## Prefer app wrappers for product defaults
 
 ```tsx
-import { Button, type ButtonProps } from "@kairosstack/ui";
+import { Button, type ButtonProps } from "@myai-tech/myui";
 
 export function PrimaryActionButton(props: ButtonProps) {
   return <Button variant="default" size="sm" {...props} />;
@@ -41,7 +41,7 @@ export function PrimaryActionButton(props: ButtonProps) {
 ## Override internal affordances when needed
 
 ```tsx
-import { Dialog, DialogContent, DialogTitle } from "@kairosstack/ui";
+import { Dialog, DialogContent, DialogTitle } from "@myai-tech/myui";
 import { X } from "lucide-react";
 
 export function SettingsDialog() {
@@ -58,7 +58,7 @@ export function SettingsDialog() {
 ## Keep boundary mapping in the app
 
 - Map SDK/core contracts to view-model data in the app repo.
-- Render that mapped data with `@kairosstack/ui` primitives.
+- Render that mapped data with `@myai-tech/myui` primitives.
 - Avoid domain logic inside shared components.
 
 ## Optimistic UI and skeleton loaders
@@ -73,7 +73,7 @@ Example with TanStack Query + `SkeletonText`:
 
 ```tsx
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, SkeletonText } from "@kairosstack/ui";
+import { Button, SkeletonText } from "@myai-tech/myui";
 
 function PersonasList() {
   const queryClient = useQueryClient();

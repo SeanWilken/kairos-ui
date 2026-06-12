@@ -8,7 +8,8 @@ import {
 } from "../src/components/ui/tabs";
 
 const meta = {
-  title: "Navigation/Tabs",
+  title: "Elements/Controls/Tabs",
+  component: Tabs,
   tags: ["autodocs"],
 } satisfies Meta;
 

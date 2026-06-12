@@ -1,4 +1,4 @@
-# Contributing to @kairosstack/ui
+# Contributing to @myai-tech/myui
 
 Thanks for contributing.
 
@@ -11,7 +11,7 @@ This library is intentionally:
 
 Please also see `ACKNOWLEDGMENTS.md` for upstream credits, especially the foundational influence of shadcn/ui.
 
-Contributor conventions in this repo are aligned with shadcn/ui component patterns unless there is a clear Kairos boundary or packaging reason to diverge.
+Contributor conventions in this repo are aligned with shadcn/ui component patterns unless there is a clear myAI boundary or packaging reason to diverge.
 
 ## Ground rules
 
@@ -39,7 +39,7 @@ Use this checklist before opening a PR:
 - All native/Radix props are forwarded.
 - `className` is supported on stylable parts.
 - Optional behaviors are prop-driven (not hardcoded).
-- No `kairos-core` or app-domain imports.
+- No `myai-core` or app-domain imports.
 - File exports are added to `src/index.ts`.
 - Documentation includes usage and overrides.
 

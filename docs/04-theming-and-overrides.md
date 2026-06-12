@@ -1,6 +1,6 @@
 # 04 - Theming and Overrides
 
-`@kairosstack/ui` supports multiple styling modes.
+`@myai-tech/myui` supports multiple styling modes.
 
 ## Light and dark mode baseline
 
@@ -13,7 +13,7 @@ The package should support both light and dark themes via CSS tokens.
 ## Default package styles
 
 ```tsx
-import "@kairosstack/ui/styles.css";
+import "@myai-tech/myui/styles.css";
 ```
 
 Use this for fastest setup.
@@ -21,7 +21,7 @@ Use this for fastest setup.
 ## Theme tokens only
 
 ```tsx
-import "@kairosstack/ui/theme.css";
+import "@myai-tech/myui/theme.css";
 ```
 
 Use this when your app owns most styling but wants shared token names.
@@ -62,7 +62,7 @@ Import components without package CSS and style through wrappers/class overrides
 
 daisyUI is optional and app-level. If you use it:
 
-- align app theme values with Kairos UI tokens
+- align app theme values with myAI UI tokens
 - keep daisy-specific assumptions in app wrappers
 - avoid introducing daisy-specific coupling inside shared primitives
 
@@ -91,7 +91,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@kairosstack/ui";
+} from "@myai-tech/myui";
 
 function MenuOverridesExample() {
   return (
