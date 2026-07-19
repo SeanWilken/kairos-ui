@@ -228,3 +228,74 @@ export type KnowledgeResolveResponseDTO = {
     maxTokens: number;
   };
 };
+export type NodeType =
+  | "document"
+  | "concept"
+  | "decision"
+  | "person"
+  | "action"
+  | "question"
+  | "evidence"
+  | "hypothesis"
+  | "index";
+
+export type RelationType =
+  | "references"
+  | "contradicts"
+  | "supports"
+  | "extends"
+  | "is_a"
+  | "part_of"
+  | "authored_by"
+  | "derived_from"
+  | "indexed_by";
+
+export type FederatedSourceType = "api" | "database" | "file" | "web" | "manual";
+
+export type NodeFilterType = NodeType | "all";
+
+export type GraphLayout = "auto" | "manual";
+
+export interface FederatedSource {
+  id: string;
+  name: string;
+  type: FederatedSourceType;
+  syncedAt?: string;
+  url?: string;
+}
+
+export interface KnowledgeTag {
+  id: string;
+  label: string;
+  color?: string;
+}
+
+export interface KnowledgeGraphNode {
+  id: string;
+  type: NodeType;
+  title: string;
+  summary?: string;
+  content?: string;
+  tags: KnowledgeTag[];
+  source?: FederatedSource;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt?: string;
+  confidence?: number;
+  position?: { x: number; y: number };
+}
+
+export interface NodeRelation {
+  id: string;
+  sourceId: string;
+  targetId: string;
+  type: RelationType;
+  label?: string;
+  weight?: number;
+  metadata?: Record<string, unknown>;
+}
+
+export interface KnowledgeGraphData {
+  nodes: KnowledgeGraphNode[];
+  relations: NodeRelation[];
+}
