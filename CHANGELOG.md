@@ -14,6 +14,9 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Added implementation and usage documentation for profile builder and card/grid consumption (`docs/10-profile-builder-and-cards.md`).
 - Added reusable Studio-style login components with `StudioLogin` as the canonical shared surface and `AuthLoginPage` as a stateful wrapper (`docs/11-auth-login-page.md`).
 - Storybook support, with basic elements, components and composites. More to come in future push until at same level as the library.
+- Added controlled Kanban task components, shared tasking contracts, fixtures, and interactive Storybook coverage.
+- Added controlled whiteboard components with freehand drawing, connected-point lines, notes, lists, erasing, and interactive Storybook coverage.
+- Added shared wizard template stories for base setup and onboarding flows.
 
 ### Changed
 
@@ -26,6 +29,8 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Added reusable layout composites for app pages and shell structure (`AppShell*`, `PageWrapper*`, `Hero*`) with slot-level class map support.
 - Fixed some style issues with tabs, added more baseline components that support the other frontend repositories.
 - WIP for SplitWorkspace, more to come on that as well in future push.
+- Fixed whiteboard canvas sizing, pointer capture, and stroke erasing behavior.
+- Fixed Kanban card movement with pointer-driven drop targeting and text-selection prevention.
 
 ## [0.1.0] - 2026-04-07
 

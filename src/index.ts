@@ -82,4 +82,6 @@ export * from "./components/ThreadCenter";
 export * from "./components/SplitWorkspace";
 export * from "./components/TurnCard";
 export * from "./components/WindowWorkspace";
+export * from "./components/tasking";
+export * from "./components/whiteboard";
 export * from "./types";
