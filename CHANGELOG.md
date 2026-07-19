@@ -17,6 +17,8 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Added controlled Kanban task components, shared tasking contracts, fixtures, and interactive Storybook coverage.
 - Added controlled whiteboard components with freehand drawing, connected-point lines, notes, lists, erasing, and interactive Storybook coverage.
 - Added shared wizard template stories for base setup and onboarding flows.
+- Added the reusable `KnowledgeWorkspace` graph experience and supporting node, relation, index, toolbar, tag, and detail components.
+- Added the `KnowledgeGraphNode` contracts and `knowledge.css` package export for React Flow styling.
 
 ### Changed
 
