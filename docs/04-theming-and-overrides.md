@@ -2,13 +2,21 @@
 
 `@myai-tech/myui` supports multiple styling modes.
 
-## Light and dark mode baseline
+## Included themes
 
-The package should support both light and dark themes via CSS tokens.
+The package includes semantic color palettes selected with `data-theme`:
 
-- Keep token names stable across modes.
-- Implement mode switching through standard selectors (`:root`, `.dark`, or `[data-theme]`).
-- Avoid hard-coding color values inside component logic.
+- `light` (also the `:root` default)
+- `dark` (also available with the legacy `.dark` class)
+- `myai` or `night` for the branded indigo dark palette
+- `corporate` for a cool blue light palette
+- `business` for a teal dark palette
+
+```ts
+document.documentElement.dataset.theme = "myai";
+```
+
+These names intentionally work alongside daisyUI's `data-theme` convention. daisyUI remains optional; myUI maps the attribute to its own semantic tokens without requiring it.
 
 ## Default package styles
 
@@ -26,21 +34,14 @@ import "@myai-tech/myui/theme.css";
 
 Use this when your app owns most styling but wants shared token names.
 
-Example light/dark token pattern:
+Example custom token override:
 
 ```css
-:root {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 4%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 4%;
-}
-
-.dark {
-  --background: 240 10% 4%;
-  --foreground: 0 0% 98%;
-  --popover: 240 10% 8%;
-  --popover-foreground: 0 0% 98%;
+[data-theme="custom"] {
+  --background: #0b1220;
+  --foreground: #f8fafc;
+  --primary: #22c55e;
+  --primary-foreground: #052e16;
 }
 ```
 
@@ -74,7 +75,7 @@ Tailwind is also optional. Consumers can:
 - import theme tokens only,
 - or run fully app-owned styling.
 
-When using Tailwind v4 with source scanning, consumer apps may need to include package paths in `@source` configuration if they rely on utility classes emitted from package component code.
+The default `styles.css` scans the package's shipped `dist` bundle, so consumers do not need to add an `@source` workaround for myUI component utilities. Apps only need their normal source detection for app-owned utility classes.
 
 ## Slot-level menu overrides
 

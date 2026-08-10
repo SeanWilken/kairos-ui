@@ -19,6 +19,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Added shared wizard template stories for base setup and onboarding flows.
 - Added the reusable `KnowledgeWorkspace` graph experience and supporting node, relation, index, toolbar, tag, and detail components.
 - Added the `KnowledgeGraphNode` contracts and `knowledge.css` package export for React Flow styling.
+- Added `data-theme` palettes for light, dark, myAI/night, corporate, and business color schemes.
 
 ### Changed
 
@@ -33,6 +34,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - WIP for SplitWorkspace, more to come on that as well in future push.
 - Fixed whiteboard canvas sizing, pointer capture, and stroke erasing behavior.
 - Fixed Kanban card movement with pointer-driven drop targeting and text-selection prevention.
+- Fixed published package styling by scanning utility classes from the shipped `dist` bundle.
 
 ## [0.1.0] - 2026-04-07
 
