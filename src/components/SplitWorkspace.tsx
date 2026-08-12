@@ -23,6 +23,15 @@ import { cn } from "./ui/utils";
 
 export type SplitWorkspaceLayout = "split" | "canvas";
 export type SplitWorkspaceGridOrientation = "row" | "column";
+export type SplitWorkspaceTilePreset =
+  | "grid-landscape"
+  | "grid-portrait"
+  | "columns"
+  | "rows"
+  | "main-left"
+  | "main-right"
+  | "main-top"
+  | "main-bottom";
 
 export type SplitWorkspacePaneAction = {
   id: string;
@@ -58,6 +67,7 @@ export type SplitWorkspacePane = {
   maxSize?: number;
   collapsible?: boolean;
   collapsedSize?: number;
+  /** Defaults to true when the workspace has an onPaneClose handler. */
   canClose?: boolean;
   disabled?: boolean;
   outlet?: React.ReactNode | ((pane: SplitWorkspacePane) => React.ReactNode);
@@ -85,6 +95,9 @@ export type SplitWorkspaceProps = {
   panes: SplitWorkspacePane[];
   direction?: "horizontal" | "vertical";
   gridOrientation?: SplitWorkspaceGridOrientation;
+  tilePreset?: SplitWorkspaceTilePreset;
+  defaultTilePreset?: SplitWorkspaceTilePreset;
+  onTilePresetChange?: (preset: SplitWorkspaceTilePreset) => void;
   showHandles?: boolean;
   handleWithGrip?: boolean;
   showPaneHeader?: boolean;
@@ -115,6 +128,10 @@ export type SplitWorkspaceProps = {
   showTopBarMenuButton?: boolean;
   showActionBarBelowHeader?: boolean;
   showTopBarAddButton?: boolean;
+  /** Reapply the selected canvas tile preset when the controlled panes array gains panes. */
+  autoTileOnPaneAdd?: boolean;
+  /** Reapply the selected canvas tile preset when the canvas changes size. */
+  autoTileOnResize?: boolean;
 };
 
 type PaneRect = { x: number; y: number; width: number; height: number };
@@ -125,6 +142,9 @@ export function SplitWorkspace({
   panes,
   direction = "horizontal",
   gridOrientation = "row",
+  tilePreset,
+  defaultTilePreset,
+  onTilePresetChange,
   showHandles = true,
   handleWithGrip = false,
   showPaneHeader = true,
@@ -155,6 +175,8 @@ export function SplitWorkspace({
   showTopBarMenuButton = true,
   showActionBarBelowHeader = false,
   showTopBarAddButton = false,
+  autoTileOnPaneAdd = false,
+  autoTileOnResize = false,
 }: SplitWorkspaceProps) {
   const [isActionMenuOpen, setIsActionMenuOpen] = React.useState(false);
   const [paneMenuOpenId, setPaneMenuOpenId] = React.useState<string | null>(null);
@@ -163,6 +185,9 @@ export function SplitWorkspace({
   const [paneReloadKeys, setPaneReloadKeys] = React.useState<Record<string, number>>({});
   const [isReassignMode, setIsReassignMode] = React.useState(false);
   const [draggedSelectionId, setDraggedSelectionId] = React.useState<string | null>(null);
+  const [internalTilePreset, setInternalTilePreset] = React.useState<SplitWorkspaceTilePreset>(
+    defaultTilePreset ?? (gridOrientation === "row" ? "grid-landscape" : "grid-portrait"),
+  );
   const [canvasRects, setCanvasRects] = React.useState<Record<string, PaneRect>>(() =>
     Object.fromEntries(
       panes.map((pane, index) => [
@@ -265,62 +290,126 @@ export function SplitWorkspace({
     };
   }, []);
 
-  const autoArrangeEvenGrid = () => {
+  const resolvedTilePreset = tilePreset ?? internalTilePreset;
+
+  React.useEffect(() => {
+    if (tilePreset === undefined && defaultTilePreset === undefined) {
+      setInternalTilePreset(gridOrientation === "row" ? "grid-landscape" : "grid-portrait");
+    }
+  }, [defaultTilePreset, gridOrientation, tilePreset]);
+
+  const arrangeTiles = (preset: SplitWorkspaceTilePreset): boolean => {
     const bounds = canvasRef.current?.getBoundingClientRect();
-    if (!bounds || panes.length === 0) return;
+    if (!bounds || bounds.width < 260 || bounds.height < 180 || panes.length === 0) return false;
 
     const gap = 16;
-    const width = bounds.width;
-    const height = bounds.height;
-
-    const groups = new Map<string, SplitWorkspacePane[]>();
-    for (const pane of panes) {
-      const key = pane.groupId ?? pane.id;
-      const current = groups.get(key) ?? [];
-      current.push(pane);
-      groups.set(key, current);
-    }
-
-    const groupEntries = Array.from(groups.values());
+    const width = Math.max(1, bounds.width - gap * 2);
+    const height = Math.max(1, bounds.height - gap * 2);
     const next: Record<string, PaneRect> = {};
 
-    if (gridOrientation === "row") {
-      const rowCount = Math.max(1, groupEntries.length);
-      const rowHeight = Math.max(180, (height - gap * (rowCount + 1)) / rowCount);
-
-      groupEntries.forEach((group, rowIndex) => {
-        const colCount = Math.max(1, group.length);
-        const paneWidth = Math.max(260, (width - gap * (colCount + 1)) / colCount);
-        group.forEach((pane, colIndex) => {
-          next[pane.id] = {
-            x: gap + colIndex * (paneWidth + gap),
-            y: gap + rowIndex * (rowHeight + gap),
-            width: paneWidth,
-            height: rowHeight,
-          };
-        });
+    const placeGrid = (columnCount: number, rowCount: number) => {
+      const paneWidth = Math.max(260, (width - gap * (columnCount - 1)) / columnCount);
+      const paneHeight = Math.max(180, (height - gap * (rowCount - 1)) / rowCount);
+      panes.forEach((pane, index) => {
+        const column = index % columnCount;
+        const row = Math.floor(index / columnCount);
+        next[pane.id] = {
+          x: gap + column * (paneWidth + gap),
+          y: gap + row * (paneHeight + gap),
+          width: paneWidth,
+          height: paneHeight,
+        };
       });
+    };
+
+    if (preset === "columns") {
+      placeGrid(panes.length, 1);
+    } else if (preset === "rows") {
+      placeGrid(1, panes.length);
+    } else if (preset === "grid-landscape" || preset === "grid-portrait") {
+      const aspect = width / height;
+      const preferredColumns = preset === "grid-landscape"
+        ? Math.ceil(Math.sqrt(panes.length * aspect))
+        : Math.max(1, Math.floor(Math.sqrt(panes.length * aspect)));
+      const fitColumns = Math.max(1, Math.floor((width + gap) / (260 + gap)));
+      const columnCount = Math.min(panes.length, preferredColumns, fitColumns);
+      placeGrid(columnCount, Math.ceil(panes.length / columnCount));
     } else {
-      const colCount = Math.max(1, groupEntries.length);
-      const colWidth = Math.max(260, (width - gap * (colCount + 1)) / colCount);
+      const mainPane = panes[0];
+      const secondaryPanes = panes.slice(1);
+      const vertical = preset === "main-left" || preset === "main-right";
+      const mainFirst = preset === "main-left" || preset === "main-top";
+      const mainWidth = vertical ? (width - gap) * 0.62 : width;
+      const mainHeight = vertical ? height : (height - gap) * 0.62;
+      next[mainPane.id] = {
+        x: gap + (vertical && !mainFirst ? width - mainWidth : 0),
+        y: gap + (!vertical && !mainFirst ? height - mainHeight : 0),
+        width: mainWidth,
+        height: mainHeight,
+      };
 
-      groupEntries.forEach((group, colIndex) => {
-        const rowCount = Math.max(1, group.length);
-        const paneHeight = Math.max(180, (height - gap * (rowCount + 1)) / rowCount);
-        group.forEach((pane, rowIndex) => {
+      if (secondaryPanes.length) {
+        const secondaryWidth = vertical ? width - mainWidth - gap : width;
+        const secondaryHeight = vertical ? height : height - mainHeight - gap;
+        secondaryPanes.forEach((pane, index) => {
+          const segment = vertical
+            ? (secondaryHeight - gap * (secondaryPanes.length - 1)) / secondaryPanes.length
+            : (secondaryWidth - gap * (secondaryPanes.length - 1)) / secondaryPanes.length;
           next[pane.id] = {
-            x: gap + colIndex * (colWidth + gap),
-            y: gap + rowIndex * (paneHeight + gap),
-            width: colWidth,
-            height: paneHeight,
+            x: gap + (vertical ? (mainFirst ? mainWidth + gap : 0) : index * (segment + gap)),
+            y: gap + (vertical ? index * (segment + gap) : (mainFirst ? mainHeight + gap : 0)),
+            width: vertical ? secondaryWidth : segment,
+            height: vertical ? segment : secondaryHeight,
           };
         });
-      });
+      }
     }
 
     setExpandedPaneId(null);
     setCanvasRects(next);
+    return true;
   };
+
+  const selectTilePreset = (preset: SplitWorkspaceTilePreset) => {
+    if (tilePreset === undefined) setInternalTilePreset(preset);
+    onTilePresetChange?.(preset);
+    arrangeTiles(preset);
+  };
+
+  const previousPaneIdsRef = React.useRef(new Set(panes.map((pane) => pane.id)));
+  React.useEffect(() => {
+    const previousIds = previousPaneIdsRef.current;
+    const paneAdded = panes.some((pane) => !previousIds.has(pane.id));
+    previousPaneIdsRef.current = new Set(panes.map((pane) => pane.id));
+
+    if (!autoTileOnPaneAdd || layout !== "canvas" || !paneAdded) return;
+    let frame = 0;
+    let attempts = 0;
+    const arrangeWhenReady = () => {
+      attempts += 1;
+      if (!arrangeTiles(resolvedTilePreset) && attempts < 10) {
+        frame = window.requestAnimationFrame(arrangeWhenReady);
+      }
+    };
+    frame = window.requestAnimationFrame(arrangeWhenReady);
+    return () => window.cancelAnimationFrame(frame);
+  }, [autoTileOnPaneAdd, layout, panes, resolvedTilePreset]);
+
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!autoTileOnResize || layout !== "canvas" || !canvas || typeof ResizeObserver === "undefined") return;
+
+    let frame = 0;
+    const observer = new ResizeObserver(() => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => arrangeTiles(resolvedTilePreset));
+    });
+    observer.observe(canvas);
+    return () => {
+      observer.disconnect();
+      window.cancelAnimationFrame(frame);
+    };
+  }, [autoTileOnResize, layout, panes, resolvedTilePreset]);
 
   const resolvePaneContent = (pane: SplitWorkspacePane, index: number) => {
     if (renderPane) {
@@ -356,6 +445,7 @@ export function SplitWorkspace({
       <DynamicWorkspacePane
         options={options}
         value={paneSelections[pane.id]}
+        showReset={false}
         customLoadLabel={pane.loadLabel ?? "Load custom content"}
         onRequestCustomLoad={() => onPaneLoadRequest?.(pane.id)}
         onValueChange={(optionId) => {
@@ -392,18 +482,16 @@ export function SplitWorkspace({
     return pane.loadedLabel ?? pane.title ?? `Pane ${index + 1}`;
   };
 
-  const loadedSelectionEntries = React.useMemo(() => {
+  const paneTabEntries = React.useMemo(() => {
     return panes
       .map((pane, index) => {
         const optionId = paneSelections[pane.id];
-        if (!optionId) return null;
         return {
           paneId: pane.id,
           optionId,
           label: getPaneDisplayLabel(pane, index),
         };
-      })
-      .filter((entry): entry is { paneId: string; optionId: string; label: string } => Boolean(entry));
+      });
   }, [panes, paneSelections]);
 
   const renderPaneHeader = (
@@ -432,96 +520,92 @@ export function SplitWorkspace({
         <h4 className="truncate text-sm">{getPaneDisplayLabel(pane, index)}</h4>
       </div>
       <div className="flex items-center gap-1">
-        {paneSelections[pane.id] ? (
-          <>
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                setPaneSelections((current) => ({ ...current, [pane.id]: "" }));
-              }}
-              className="h-7 w-7 rounded-md border border-border text-muted-foreground hover:bg-accent inline-flex items-center justify-center"
-              title="Change content"
-              aria-label="Change content"
-            >
-              <Shuffle className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                setPaneReloadKeys((current) => ({ ...current, [pane.id]: (current[pane.id] ?? 0) + 1 }));
-              }}
-              className="h-7 w-7 rounded-md border border-border text-muted-foreground hover:bg-accent inline-flex items-center justify-center"
-              title="Refresh pane"
-              aria-label="Refresh pane"
-            >
-              <RefreshCcw className="w-3.5 h-3.5" />
-            </button>
-          </>
-        ) : null}
-        {pane.menuActions?.length ? (
-          <div className="relative">
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                setPaneMenuOpenId((current) => (current === pane.id ? null : pane.id));
-              }}
-              className="h-7 w-7 rounded-md border border-border text-muted-foreground hover:bg-accent inline-flex items-center justify-center"
-              title="Pane options"
-              aria-label={`Options for ${pane.title ?? `pane ${index + 1}`}`}
-            >
-              <MoreHorizontal className="w-3.5 h-3.5" />
-            </button>
-            {paneMenuOpenId === pane.id ? (
-              <div className="absolute right-0 top-8 z-20 min-w-[140px] rounded-md border border-border bg-popover p-1 shadow-md">
-                {pane.menuActions.map((action) => (
-                  <button
-                    key={`${pane.id}-${action.id}`}
-                    type="button"
-                    disabled={action.disabled}
-                    className="w-full px-2 py-1.5 rounded text-left text-sm hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={() => {
-                      onPaneActionSelect?.(pane.id, action.id);
-                      setPaneMenuOpenId(null);
-                    }}
-                  >
-                    {action.label}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-
-        <button
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            setExpandedPaneId((current) => (current === pane.id ? null : pane.id));
-          }}
-          className="h-7 w-7 rounded-md border border-border text-muted-foreground hover:bg-accent inline-flex items-center justify-center"
-          title={expandedPaneId === pane.id ? "Exit expand" : "Expand pane"}
-          aria-label={expandedPaneId === pane.id ? "Exit expand" : "Expand pane"}
-        >
-          {expandedPaneId === pane.id ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-        </button>
-
-        {pane.canClose ? (
+        <div className="relative">
           <button
             type="button"
             onClick={(event) => {
               event.stopPropagation();
-              onPaneClose?.(pane.id);
+              setPaneMenuOpenId((current) => (current === pane.id ? null : pane.id));
             }}
             className="h-7 w-7 rounded-md border border-border text-muted-foreground hover:bg-accent inline-flex items-center justify-center"
-            title="Close pane"
-            aria-label={`Close ${pane.title ?? "pane"}`}
+            title="Pane options"
+            aria-label={`Options for ${pane.title ?? `pane ${index + 1}`}`}
           >
-            <X className="w-3.5 h-3.5" />
+            <MoreHorizontal className="w-3.5 h-3.5" />
           </button>
-        ) : null}
+          {paneMenuOpenId === pane.id ? (
+            <div
+              className="absolute right-0 top-8 z-20 min-w-[180px] rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              {pane.menuActions?.map((action) => (
+                <button
+                  key={`${pane.id}-${action.id}`}
+                  type="button"
+                  disabled={action.disabled}
+                  className="w-full px-2 py-1.5 rounded text-left text-sm hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    onPaneActionSelect?.(pane.id, action.id);
+                    setPaneMenuOpenId(null);
+                  }}
+                >
+                  {action.label}
+                </button>
+              ))}
+              {pane.menuActions?.length ? <div className="my-1 h-px bg-border" /> : null}
+              {paneSelections[pane.id] ? (
+                <>
+                  <button
+                    type="button"
+                    className="w-full px-2 py-1.5 rounded text-left text-sm hover:bg-accent inline-flex items-center gap-2"
+                    onClick={() => {
+                      setPaneSelections((current) => ({ ...current, [pane.id]: "" }));
+                      setPaneMenuOpenId(null);
+                    }}
+                  >
+                    <Shuffle className="w-3.5 h-3.5" /> Change content
+                  </button>
+                  <button
+                    type="button"
+                    className="w-full px-2 py-1.5 rounded text-left text-sm hover:bg-accent inline-flex items-center gap-2"
+                    onClick={() => {
+                      setPaneReloadKeys((current) => ({ ...current, [pane.id]: (current[pane.id] ?? 0) + 1 }));
+                      setPaneMenuOpenId(null);
+                    }}
+                  >
+                    <RefreshCcw className="w-3.5 h-3.5" /> Refresh content
+                  </button>
+                </>
+              ) : null}
+              <button
+                type="button"
+                className="w-full px-2 py-1.5 rounded text-left text-sm hover:bg-accent inline-flex items-center gap-2"
+                onClick={() => {
+                  setExpandedPaneId((current) => (current === pane.id ? null : pane.id));
+                  setPaneMenuOpenId(null);
+                }}
+              >
+                {expandedPaneId === pane.id ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                {expandedPaneId === pane.id ? "Restore pane" : "Expand pane"}
+              </button>
+              {pane.canClose !== false && onPaneClose ? (
+                <>
+                  <div className="my-1 h-px bg-border" />
+                  <button
+                    type="button"
+                    className="w-full px-2 py-1.5 rounded text-left text-sm text-destructive hover:bg-destructive/10 inline-flex items-center gap-2"
+                    onClick={() => {
+                      onPaneClose(pane.id);
+                      setPaneMenuOpenId(null);
+                    }}
+                  >
+                    <X className="w-3.5 h-3.5" /> Close pane
+                  </button>
+                </>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );
@@ -535,31 +619,24 @@ export function SplitWorkspace({
               <h3 className="truncate">{title}</h3>
               {subtitle ? <p className="truncate text-xs text-muted-foreground">{subtitle}</p> : null}
             </div>
+          </div>
+        ) : null}
+        {showTopBar && showActionBarBelowHeader ? (
+          <div className="h-11 border-b border-border px-3 flex items-end gap-1 bg-background">
             <button
               type="button"
               onClick={onAddPaneRequest}
               disabled={!onAddPaneRequest}
-              className="h-10 w-10 rounded-md border border-border inline-flex items-center justify-center hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mb-1 h-8 w-8 rounded-md border border-border text-muted-foreground inline-flex items-center justify-center hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
               title={addPaneLabel}
               aria-label={addPaneLabel}
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4" />
             </button>
           </div>
         ) : null}
         <div className="flex-1 border border-dashed border-border rounded-lg flex items-center justify-center m-3">
-          <div className="flex flex-col items-center gap-3">
-            {emptyState ?? <p className="text-sm text-muted-foreground">No panes open</p>}
-            <button
-              type="button"
-              onClick={onAddPaneRequest}
-              disabled={!onAddPaneRequest}
-              className="h-9 px-3 rounded-md border border-border text-sm inline-flex items-center gap-2 hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Plus className="w-4 h-4" />
-              {addPaneLabel}
-            </button>
-          </div>
+          {emptyState ?? <p className="text-sm text-muted-foreground">No panes open. Use the + in the tab bar to add one.</p>}
         </div>
       </div>
     );
@@ -579,7 +656,7 @@ export function SplitWorkspace({
       />
 
       {showTopBar ? (
-      <div className="h-14 border-b border-border px-3 flex items-center justify-between gap-3 bg-background">
+      <div className="h-14 border-b border-border px-3 flex items-center justify-between gap-3 bg-background overflow-hidden">
         <div className="flex items-center gap-2 min-w-0">
           {showTopBarMenuButton ? (
             <button
@@ -619,7 +696,7 @@ export function SplitWorkspace({
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2 overflow-x-auto">
           {showTopBarAddButton ? (
             <button
               type="button"
@@ -634,15 +711,33 @@ export function SplitWorkspace({
           ) : null}
 
           {showTopBarActions && layout === "canvas" ? (
-            <button
-              type="button"
-              onClick={autoArrangeEvenGrid}
-              className="h-10 px-3 rounded-md border border-border text-sm inline-flex items-center gap-2 hover:bg-accent"
-              title="Evenly space panes"
-            >
-              <LayoutGrid className="w-4 h-4" />
-              Auto grid
-            </button>
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => arrangeTiles(resolvedTilePreset)}
+                className="h-10 px-3 rounded-l-md border border-border text-sm inline-flex items-center gap-2 hover:bg-accent"
+                title="Apply selected tile layout"
+              >
+                <LayoutGrid className="w-4 h-4" />
+                Tile
+              </button>
+              <select
+                value={resolvedTilePreset}
+                onChange={(event) => selectTilePreset(event.target.value as SplitWorkspaceTilePreset)}
+                className="h-10 max-w-[11rem] rounded-r-md border border-l-0 border-border bg-background px-2 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+                aria-label="Tile layout"
+                title="Tile layout"
+              >
+                <option value="grid-landscape">Grid landscape</option>
+                <option value="grid-portrait">Grid portrait</option>
+                <option value="columns">Side by side</option>
+                <option value="rows">Stacked</option>
+                <option value="main-left">Main left</option>
+                <option value="main-right">Main right</option>
+                <option value="main-top">Main top</option>
+                <option value="main-bottom">Main bottom</option>
+              </select>
+            </div>
           ) : null}
 
           {showTopBarActions ? (
@@ -672,19 +767,24 @@ export function SplitWorkspace({
       ) : null}
 
       {showTopBar && showActionBarBelowHeader ? (
-        <div className="h-11 border-b border-border px-3 flex items-center gap-1 bg-background overflow-x-auto">
-          <div className="flex items-center gap-1">
-            {loadedSelectionEntries.map((entry) => (
+        <div className="h-11 border-b border-border px-3 flex items-end gap-1 bg-background overflow-x-auto">
+          <div className="flex min-w-max items-end gap-1">
+            {paneTabEntries.map((entry) => (
               <button
                 key={`bar-${entry.paneId}-${entry.optionId}`}
                 type="button"
                 onClick={() => setExpandedPaneId(entry.paneId)}
-                draggable={isReassignMode}
+                draggable={isReassignMode && Boolean(entry.optionId)}
                 onDragStart={(event) => {
+                  if (!entry.optionId) return;
                   setDraggedSelectionId(entry.optionId);
                   event.dataTransfer.setData("text/plain", entry.optionId);
                 }}
-                className="h-8 px-3 rounded-md border border-border text-xs whitespace-nowrap hover:bg-accent"
+                className={cn(
+                  "h-8 max-w-[12rem] px-3 rounded-t-md border border-b-0 text-xs whitespace-nowrap truncate hover:bg-accent",
+                  expandedPaneId === entry.paneId ? "border-primary bg-accent text-foreground" : "border-border bg-muted/30",
+                )}
+                title={entry.label}
               >
                 {entry.label}
               </button>
@@ -694,7 +794,7 @@ export function SplitWorkspace({
                 type="button"
                 onClick={onAddPaneRequest}
                 disabled={!onAddPaneRequest}
-                className="h-8 w-8 rounded-md border border-border text-muted-foreground inline-flex items-center justify-center hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-8 w-8 rounded-md border border-border text-muted-foreground inline-flex shrink-0 items-center justify-center hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
                 title={addPaneLabel}
                 aria-label={addPaneLabel}
               >

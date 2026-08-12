@@ -18,12 +18,18 @@ const meta = {
     subtitle: { control: "text", description: "Header subtitle for context." },
     layout: { control: "radio", options: ["canvas", "split"], description: "Window arrangement mode." },
     gridOrientation: { control: "radio", options: ["row", "column"], description: "Auto-grid grouping orientation." },
+    defaultTilePreset: {
+      control: "select",
+      options: ["grid-landscape", "grid-portrait", "columns", "rows", "main-left", "main-right", "main-top", "main-bottom"],
+      description: "Initial canvas tiling preset.",
+    },
   },
   args: {
     title: "Window Workspace",
     subtitle: "Dynamic support panes",
     layout: "canvas",
     gridOrientation: "row",
+    defaultTilePreset: "grid-landscape",
   },
   parameters: {
     layout: "fullscreen",
@@ -45,7 +51,7 @@ function WindowWorkspaceStory() {
   const [panes, setPanes] = React.useState<SplitWorkspacePane[]>([]);
 
   return (
-    <div className="h-[100dvh]">
+    <div style={{ height: "100dvh" }}>
       <WindowWorkspace
         className="h-full"
         title="Window Workspace"
@@ -93,11 +99,53 @@ export const Workspace: Story = {
   render: () => <WindowWorkspaceStory />,
 };
 
+function TilingWorkspaceStory() {
+  const [panes, setPanes] = React.useState<SplitWorkspacePane[]>(() =>
+    Array.from({ length: 5 }, (_, index) => ({
+      id: `tile-${index + 1}`,
+      title: index === 0 ? "Primary window" : `Window ${index + 1}`,
+      outlet: (
+        <div className="flex h-full items-center justify-center bg-muted/20 text-sm text-muted-foreground">
+          {index === 0 ? "Primary window" : `Window ${index + 1}`}
+        </div>
+      ),
+    })),
+  );
+
+  return (
+    <div style={{ height: "100dvh" }}>
+      <WindowWorkspace
+        className="h-full"
+        title="Snap layouts"
+        subtitle="Choose a tile preset, then close any window"
+        panes={panes}
+        defaultTilePreset="grid-landscape"
+        onPaneClose={(paneId) => setPanes((current) => current.filter((pane) => pane.id !== paneId))}
+        onAddPaneRequest={() => {
+          setPanes((current) => [
+            ...current,
+            {
+              id: `tile-${Date.now()}`,
+              title: `Window ${current.length + 1}`,
+              outlet: <div className="flex h-full items-center justify-center text-sm text-muted-foreground">New window</div>,
+            },
+          ]);
+        }}
+      />
+    </div>
+  );
+}
+
+export const TilingAndClose: Story = {
+  render: () => <TilingWorkspaceStory />,
+};
+
 export const PersistenceContract: Story = {
   render: () => {
     const state: WorkspaceStateDTO = {
       layout: "canvas",
       gridOrientation: "row",
+      tilePreset: "main-left",
       rightPanelOpen: true,
       panes: [
         { id: "window-1", title: "Window 1", groupId: "support", loadOptionId: "documents", canClose: true },

@@ -27,6 +27,7 @@ export type WorkspaceThreadBindingDTO = {
 export type WorkspaceStateDTO = {
   layout: "canvas" | "split";
   gridOrientation?: "row" | "column";
+  tilePreset?: "grid-landscape" | "grid-portrait" | "columns" | "rows" | "main-left" | "main-right" | "main-top" | "main-bottom";
   rightPanelOpen?: boolean;
   panes: WorkspacePaneDTO[];
 };

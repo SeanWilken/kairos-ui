@@ -7,6 +7,7 @@ import {
   type SplitWorkspaceLoadOptionSpec,
   type SplitWorkspaceOptionGroup,
   type SplitWorkspacePane,
+  type SplitWorkspaceTilePreset,
 } from "./SplitWorkspace";
 
 export type WindowWorkspaceProps = {
@@ -14,6 +15,11 @@ export type WindowWorkspaceProps = {
   panes: SplitWorkspacePane[];
   layout?: SplitWorkspaceLayout;
   gridOrientation?: SplitWorkspaceGridOrientation;
+  tilePreset?: SplitWorkspaceTilePreset;
+  defaultTilePreset?: SplitWorkspaceTilePreset;
+  onTilePresetChange?: (preset: SplitWorkspaceTilePreset) => void;
+  autoTileOnPaneAdd?: boolean;
+  autoTileOnResize?: boolean;
   workspaceOptions?: SplitWorkspaceOptionGroup[];
   selectedWorkspaceId?: string;
   onWorkspaceChange?: (workspaceId: string) => void;
@@ -32,6 +38,11 @@ export function WindowWorkspace({
   panes,
   layout = "canvas",
   gridOrientation = "row",
+  tilePreset,
+  defaultTilePreset,
+  onTilePresetChange,
+  autoTileOnPaneAdd = true,
+  autoTileOnResize = true,
   workspaceOptions,
   selectedWorkspaceId,
   onWorkspaceChange,
@@ -49,11 +60,17 @@ export function WindowWorkspace({
       className={className}
       layout={layout}
       gridOrientation={gridOrientation}
+      tilePreset={tilePreset}
+      defaultTilePreset={defaultTilePreset}
+      onTilePresetChange={onTilePresetChange}
+      autoTileOnPaneAdd={autoTileOnPaneAdd}
+      autoTileOnResize={autoTileOnResize}
       showTopBar
       showTopBarActions
       showTopBarMenuButton={false}
       showActionBarBelowHeader
-      showTopBarAddButton
+      showTopBarAddButton={false}
+      showAddPaneButton={false}
       title={title}
       subtitle={subtitle}
       workspaceOptions={workspaceOptions}
